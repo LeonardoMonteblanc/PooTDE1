@@ -9,10 +9,14 @@
     - `/controle`: logica do projeto
 
 
+<br>
 
-
+---
+### O que falta fazer ou pode ser melhorado: 
 - `code/`
   - `src/`
     - `modelo/`
       - `Pedido.java`
         > [ ] = TODO: Implementar uma melhor estrutura de toString() para o metodo Pedido.java
+      - `Remessa.java`
+        > [ ] = TODO: Implementar uma melhor estrutura de toString() para o metodo Remessa.java
