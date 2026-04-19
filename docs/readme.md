@@ -7,4 +7,3 @@
   **Packages:**
     - `/modelo`: classes do projeto - getters/setters 
     - `/controle`: logica do projeto
-             |
