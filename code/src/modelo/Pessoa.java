@@ -8,7 +8,8 @@ public class Pessoa {
         this.codigo = codigo;
         this.nome = nome;
     }
-
+    
+// GETS ======================================================
     public int getCodigo() {
         return this.codigo;
     }
@@ -17,6 +18,7 @@ public class Pessoa {
         return this.nome;
     }
 
+// SETS ======================================================
     public void setCodigo(int codigo)  {
         this.codigo = codigo;
     }
