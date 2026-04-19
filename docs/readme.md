@@ -13,10 +13,19 @@
 
 ---
 ### O que falta fazer ou pode ser melhorado: 
-- `code/`
-  - `src/`
-    - `modelo/`
-      - `Pedido.java`
-        > [ ] = TODO: Implementar uma melhor estrutura de toString() para o metodo Pedido.java
-      - `Remessa.java`
-        > [ ] = TODO: Implementar uma melhor estrutura de toString() para o metodo Remessa.java
+
+- Ajustar funcao Listar() 
+- Ajustar funcao mostrarMenu()
+  - Ter em mente que o ajuste disso também implica no ajuste da validacao do usuarioLogado (cliente nao pode acessar informações que não dizem respeito a ele)
+- Implementar cadastro, exclusao, alteracao = por input do usuario
+- Implementar pesquisa por codigo ou nome 
+
+
+
+### Para realizar login no sistema:
+login: leo
+senha: 123
+
+login: vitor
+senha: 123
+
