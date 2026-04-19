@@ -8,6 +8,7 @@ public class ItemPedido {
         this.produto = produto;
         this.quantidade = quantidade;
     }
+// GETS ======================================================
 
     public Produto getProduto() {
         return this.produto;
@@ -17,7 +18,7 @@ public class ItemPedido {
     public int getQuantidade() {
         return this.quantidade;
     }
-
+// SETS ======================================================
     public void setProduto(Produto p) {
         this.produto = p;
     }
