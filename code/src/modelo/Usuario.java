@@ -20,7 +20,7 @@ public class Usuario extends Pessoa {
         return this.senha;
     }
 
-    public String nivelAcesso() {
+    public String getNivelAcesso() {
         return this.nivelAcesso;
     }
 // SETS ======================================================

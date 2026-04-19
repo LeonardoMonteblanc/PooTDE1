@@ -1,14 +1,15 @@
 package modelo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Remessa {
     private int codigo;
-    private LocalDate data;
+    private LocalDate data = LocalDate.now();
     private Transportadora transportadora;
     private Usuario cliente;
-    private List<Pedido> pedidos;
+    private List<Pedido> pedidos = new ArrayList<>();
     
     public Remessa(int cod, Transportadora t, Usuario cliente) {
         this.codigo = cod;

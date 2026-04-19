@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Pedido {
-    private ArrayList<ItemPedido> itens;
+    private ArrayList<ItemPedido> itens = new ArrayList<>();
     
     public Pedido(){
 
@@ -13,19 +13,21 @@ public class Pedido {
         for(ItemPedido i : itens ) {
             if(i.getProduto().equals(p)) {
                 i.setQuantidade(i.getQuantidade() + qtd);
-            } else {
-                itens.add(new ItemPedido(p, qtd));
-            }
+                return;
+            } 
         }
+        itens.add(new ItemPedido(p, qtd));
     }
 
-    public void removerItem(Produto p, int qtd) {
+    public void removerItem(Produto p) {
         Iterator<ItemPedido> it = itens.iterator();
         while(it.hasNext()) {
-            it.next().getProduto().equals(p);
+        if(it.next().getProduto().equals(p)) {
             it.remove();
+            break; 
         }
     }
+}
 
 // GETS ======================================================
 
