@@ -1,11 +1,12 @@
 package modelo;
 
-public class Usuario {
+public class Usuario extends Pessoa {
     private String login;
     private String senha;
     private String nivelAcesso;
 
-    public Usuario(String login, String senha, String acesso) {
+    public Usuario(int codigo, String nome, String login, String senha, String acesso) {
+        super(codigo, nome);
         this.login = login;
         this.senha = senha;
         this.nivelAcesso = acesso;
