@@ -5,7 +5,7 @@
 
 **1.1. Autenticação e Controle de Acesso**
 - O sistema possui **dois perfis de usuário** (definidos pelo campo `nivelAcesso`): `ADMINISTRADOR` e `OPERADOR`.
-- Ao iniciar, exibe-se uma tela de **Login** (usuário e senha, sem criptografia para o protótipo).
+- Ao iniciar, exibe-se uma tela de **Login** (usuário e senha, sem criptografia).
 - Após autenticação, o sistema exibe um **menu específico conforme o nível de acesso**:
   - **ADMINISTRADOR:** Acesso a todas as funcionalidades de CRUD (Usuários, Fornecedores, Produtos, Transportadoras, Cargas).
   - **OPERADOR:** Acesso apenas a **Consultas** e **Cadastro/Consulta de Cargas**. Não pode alterar cadastros base (Fornecedores, Produtos, Transportadoras, Usuários).
@@ -28,35 +28,33 @@ Para as entidades **Usuário, Fornecedor, Transportadora, Produto**, as seguinte
   - **Itens da Carga:** Lista de objetos contendo `produto` e `quantidade`.
   - Uma carga pode conter produtos de **diferentes fornecedores** (a associação é feita pelo produto, não diretamente pelo fornecedor).
 
-#### 2. Estrutura de Dados (Modelo de Classes Simplificado)
+#### 2. Estrutura de Dados (Modelo de Classes)
 
 | Classe         | Atributos Principais                               |
 | :------------- | :------------------------------------------------- |
-| **Usuario**    | `codigo`, `nome`, `login`, `senha`, `nivelAcesso` (Enum) |
+| **Usuario**    | `codigo`, `nome`, `login`, `senha`, `nivelAcesso`|
 | **Fornecedor** | `codigo`, `nome`, `cnpj` (ou documento)            |
 | **Transportadora** | `codigo`, `nome`, `modal` (opcional)            |
 | **Produto**    | `codigo`, `descricao`, `precoSugerido`             |
-| **Fornecimento** | (Classe Associativa) `fornecedor`, `produto`       |
-| **Carga**      | `codigo`, `dataCriacao`, `transportadora`, `itens` (List<ItemCarga>) |
+| **Fornecimento** |  `fornecedor`, `produto`       |
+| **Remessa**      | `codigo`, `dataCriacao`, `transportadora`, `itens` (List<ItemCarga>) |
 | **ItemCarga**  | `produto`, `quantidade`                            |
 
-#### 3. Massa de Dados para Demonstração (Pré-carregada em Memória)
-Ao iniciar o sistema pela primeira vez (ou em modo de demonstração), a estrutura deve ser populada com:
+#### 3. Persistência de dados em memória
+Ao iniciar o sistema pela primeira vez, a estrutura deve ser populada com:
 - **2 Usuários:**
   - Login: `admin` / Senha: `123` (Nível: ADMINISTRADOR)
   - Login: `oper` / Senha: `123` (Nível: OPERADOR)
 - **3 Fornecedores**
 - **7 Produtos por Fornecedor** (total 21 produtos, respeitando a relação N:N estabelecida no item 1.3).
 - **3 Transportadoras**
-- **4 Cargas** previamente cadastradas, cada uma contendo:
+- **4 Remessas** previamente cadastradas, cada uma contendo:
   - Uma transportadora selecionada.
   - Itens com produtos e quantidades variadas.
 
 #### 4. Restrições Técnicas (Protótipo)
-- **Persistência:** Apenas em **memória RAM** (uso de `ArrayList` ou `HashMap`). Nada de banco de dados ou arquivos.
-- **Interface:** Exclusivamente **Console** (System.in / System.out).
-- **Arquitetura:** Foco na criação do **Diagrama de Classes UML** que servirá de guia para codificação posterior.
-
+- **Persistência:** Apenas em **memória RAM** (uso de `ArrayList`).
+- **Interface:** Exclusivamente **Console** 
 ---
 
 ```
