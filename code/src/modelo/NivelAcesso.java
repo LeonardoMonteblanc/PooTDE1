@@ -3,6 +3,10 @@ package modelo;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * enum é melhor para controlar o nivel de acesso do usuario
+ * e mais flexivel para caso surgir novos niveis
+ */
 public enum NivelAcesso {
     CLIENTE(EnumSet.of(Permissao.CONSULTAR)),
     ADMIN(EnumSet.of(Permissao.CONSULTAR, Permissao.CADASTRAR, Permissao.EXCLUIR));

@@ -1,0 +1,6 @@
+- [ ] Ajuste de consulta com permissionamento
+- [ ] Cadastro de produtos
+- [ ] Cadastro de Fornecedores
+- [ ] Cadastro de Transportadora
+- [ ] Cadastro de Cadastro de Cliente (?)
+- [ ] Criação de Remessa

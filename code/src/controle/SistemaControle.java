@@ -38,6 +38,10 @@ public class SistemaControle {
         tipo = tipo.toLowerCase();
         switch (tipo) {
             case "usuarios":
+                if (!usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
+                    System.out.println("Acesso negado- apenas administradores podem consultar usuarios");
+                    break;
+                }
                 System.out.println("\n========== USUARIOS (" + usuarios.size() + ") ==========");
                 if (usuarios.isEmpty()) {
                     System.out.println("(nenhum usuário cadastrado)");
@@ -49,6 +53,10 @@ public class SistemaControle {
                 break;
 
             case "fornecedores":
+                if (!usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
+                    System.out.println("Acesso negado - apenas administradores podem consultar fornecedores");
+                    break;
+                }
                 System.out.println("\n========== FORNECEDORES (" + fornecedores.size() + ") ==========");
                 if (fornecedores.isEmpty()) {
                     System.out.println("  (nenhum fornecedor cadastrado)");
@@ -118,6 +126,10 @@ public class SistemaControle {
         break;
 
             case "transportadoras":
+                if (!usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
+                    System.out.println("Acesso negado-  apenas administradores podem consultar transportadoras");
+                    break;
+                }
                 System.out.println("\n========== TRANSPORTADORAS (" + transportadoras.size() + ") ==========");
                 if (transportadoras.isEmpty()) {
                     System.out.println("  (nenhuma transportadora cadastrada)");
@@ -129,11 +141,18 @@ public class SistemaControle {
                 break;
 
     case "remessas":
-        System.out.println("\n========== REMESSAS (" + remessas.size() + ") ==========");
-        if (remessas.isEmpty()) {
-            System.out.println("  (nenhuma remessa cadastrada)");
+        List<Remessa> remessasVisiveis = new ArrayList<>();
+        for (Remessa r : remessas) {
+            if (usuarioLogado.temPermissao(Permissao.CADASTRAR) ||
+                    r.getCliente().getCodigo() == usuarioLogado.getCodigo()) {
+                remessasVisiveis.add(r);
+            }
+        }
+        System.out.println("\n========== REMESSAS (" + remessasVisiveis.size() + ") ==========");
+        if (remessasVisiveis.isEmpty()) {
+            System.out.println("  (nenhuma remessa encontrada)");
         } else {
-            for (Remessa r : remessas) {
+            for (Remessa r : remessasVisiveis) {
                 // Cabeçalho da remessa
                 System.out.printf("%n>> REMESSA #%d <<%n", r.getCodigo());
                 System.out.printf("   Data: %s | Transportadora: %s%n", 
@@ -201,11 +220,16 @@ public class SistemaControle {
         break;
 
             case "todos":
-                listar("usuarios");
-                listar("fornecedores");
-                listar("produtos");
-                listar("transportadoras");
-                listar("remessas");
+                if (usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
+                    listar("usuarios");
+                    listar("fornecedores");
+                    listar("produtos");
+                    listar("transportadoras");
+                    listar("remessas");
+                } else {
+                    listar("produtos");
+                    listar("remessas");
+                }
                 break;
 
             default:
@@ -220,7 +244,9 @@ public class SistemaControle {
         System.out.println("Bem vindo ao sistema de ecommerce ProtoType");
         System.out.println("Para iniciarmos: digite seu login e senha.");
 
+        System.out.print("Login: ");
         String username = s.nextLine();
+        System.out.print("Senha: ");
         String senha = s.nextLine();
 
         if (logar(username, senha)) {
@@ -278,11 +304,17 @@ public class SistemaControle {
     }
 
     private void consultarPorCodigo(Scanner s) {
+        boolean isAdmin = usuarioLogado.temPermissao(Permissao.CADASTRAR);
+
         System.out.println("\nBuscar por codigo em:");
-        System.out.println("  1 - Usuarios");
-        System.out.println("  2 - Fornecedores");
+        if (isAdmin) {
+            System.out.println("  1 - Usuarios");
+            System.out.println("  2 - Fornecedores");
+        }
         System.out.println("  3 - Produtos");
-        System.out.println("  4 - Transportadoras");
+        if (isAdmin) {
+            System.out.println("  4 - Transportadoras");
+        }
         System.out.println("  5 - Remessas");
         System.out.print("Tipo: ");
 
@@ -291,6 +323,13 @@ public class SistemaControle {
             tipo = Integer.parseInt(s.nextLine().trim());
         } catch (NumberFormatException e) {
             System.out.println("Tipo invalido.");
+            return;
+        }
+
+        // valida o acesso ao tipo
+        boolean tipoRestrito = (tipo == 1 || tipo == 2 || tipo == 4) && !isAdmin;
+        if (tipoRestrito) {
+            System.out.println("Acesso negado.");
             return;
         }
 
@@ -308,8 +347,7 @@ public class SistemaControle {
             case 1:
                 for (Usuario u : usuarios) {
                     if (u.getCodigo() == codigo) {
-                        System.out.printf("%n[Usuario] %s (login: %s) - %s%n",
-                                u.getNome(), u.getLogin(), u.getNivelAcesso());
+                        System.out.printf("%n[Usuario] %s (login: %s) - %s%n", u.getNome(), u.getLogin(), u.getNivelAcesso().name());
                         encontrado = true;
                         break;
                     }
@@ -385,46 +423,51 @@ public class SistemaControle {
             return;
         }
 
-        boolean algumResultado = false;
+        boolean isAdmin = usuarioLogado.temPermissao(Permissao.CADASTRAR);
+        boolean achou = false;
 
-        // Usuarios
-        List<Usuario> usuariosEncontrados = new ArrayList<>();
-        for (Usuario u : usuarios) {
-            if (u.getNome().toLowerCase().contains(texto) || u.getLogin().toLowerCase().contains(texto)) {
-                usuariosEncontrados.add(u);
+        // pesquisa usuarios, apenas ADMIN
+        if (isAdmin) {
+            List<Usuario> usuariosEncontrados = new ArrayList<>();
+            for (Usuario u : usuarios) {
+                if (u.getNome().toLowerCase().contains(texto) || u.getLogin().toLowerCase().contains(texto)) {
+                    usuariosEncontrados.add(u);
+                }
             }
-        }
-        if (!usuariosEncontrados.isEmpty()) {
-            System.out.println("\n--- Usuarios ---");
-            for (Usuario u : usuariosEncontrados) {
-                System.out.printf("  [%d] %s (login: %s) - %s%n",
-                        u.getCodigo(), u.getNome(), u.getLogin(), u.getNivelAcesso());
+            if (!usuariosEncontrados.isEmpty()) {
+                System.out.println("\n--- Usuarios ---");
+                for (Usuario u : usuariosEncontrados) {
+                    System.out.printf("  [%d] %s (login: %s) - %s%n",
+                            u.getCodigo(), u.getNome(), u.getLogin(), u.getNivelAcesso().name());
+                }
+                achou = true;
             }
-            algumResultado = true;
-        }
-
-        // Fornecedores
-        List<Fornecedor> fornecedoresEncontrados = new ArrayList<>();
-        for (Fornecedor f : fornecedores) {
-            if (f.getNome().toLowerCase().contains(texto) || f.getCnpj().toLowerCase().contains(texto)) {
-                fornecedoresEncontrados.add(f);
-            }
-        }
-        if (!fornecedoresEncontrados.isEmpty()) {
-            System.out.println("\n--- Fornecedores ---");
-            for (Fornecedor f : fornecedoresEncontrados) {
-                System.out.printf("  [%d] %s - CNPJ: %s%n", f.getCodigo(), f.getNome(), f.getCnpj());
-            }
-            algumResultado = true;
         }
 
-        // Produtos
+        // pesquisa fornecedores, apenas ADMIN
+        if (isAdmin) {
+            List<Fornecedor> fornecedoresEncontrados = new ArrayList<>();
+            for (Fornecedor f : fornecedores) {
+                if (f.getNome().toLowerCase().contains(texto) || f.getCnpj().toLowerCase().contains(texto)) {
+                    fornecedoresEncontrados.add(f);
+                }
+            }
+            if (!fornecedoresEncontrados.isEmpty()) {
+                System.out.println("\n--- Fornecedores ---");
+                for (Fornecedor f : fornecedoresEncontrados) {
+                    System.out.printf("  [%d] %s - CNPJ: %s%n", f.getCodigo(), f.getNome(), f.getCnpj());
+                }
+                achou = true;
+            }
+        }
+
+        // pesquisa produtos, todos
         List<Produto> produtosEncontrados = new ArrayList<>();
         for (Produto p : produtos) {
-            boolean matchDesc = p.getDescricao().toLowerCase().contains(texto);
-            boolean matchForn = p.getFornecedores().stream()
+            boolean achouDescricao = p.getDescricao().toLowerCase().contains(texto);
+            boolean achouFornecedor = isAdmin && p.getFornecedores().stream()
                     .anyMatch(f -> f.getNome().toLowerCase().contains(texto));
-            if (matchDesc || matchForn) {
+            if (achouDescricao || achouFornecedor) {
                 produtosEncontrados.add(p);
             }
         }
@@ -433,29 +476,33 @@ public class SistemaControle {
             for (Produto p : produtosEncontrados) {
                 System.out.printf("  [%d] %s - R$ %.2f%n", p.getCodigo(), p.getDescricao(), p.getPreco());
             }
-            algumResultado = true;
+            achou = true;
         }
 
-        // Transportadoras
-        List<Transportadora> transportadorasEncontradas = new ArrayList<>();
-        for (Transportadora t : transportadoras) {
-            if (t.getNome().toLowerCase().contains(texto)) {
-                transportadorasEncontradas.add(t);
+        // pesquisa transportadoras, apenas ADMIN
+        if (isAdmin) {
+            List<Transportadora> transportadorasEncontradas = new ArrayList<>();
+            for (Transportadora t : transportadoras) {
+                if (t.getNome().toLowerCase().contains(texto)) {
+                    transportadorasEncontradas.add(t);
+                }
             }
-        }
-        if (!transportadorasEncontradas.isEmpty()) {
-            System.out.println("\n--- Transportadoras ---");
-            for (Transportadora t : transportadorasEncontradas) {
-                System.out.printf("  [%d] %s%n", t.getCodigo(), t.getNome());
+            if (!transportadorasEncontradas.isEmpty()) {
+                System.out.println("\n--- Transportadoras ---");
+                for (Transportadora t : transportadorasEncontradas) {
+                    System.out.printf("  [%d] %s%n", t.getCodigo(), t.getNome());
+                }
+                achou = true;
             }
-            algumResultado = true;
         }
 
-        // Remessas (busca por nome do cliente ou da transportadora)
+        // pesquisa remessas, ADMIN consegue ver todas, CLIENTE apenas as suas
         List<Remessa> remessasEncontradas = new ArrayList<>();
         for (Remessa r : remessas) {
-            if (r.getCliente().getNome().toLowerCase().contains(texto) ||
-                    r.getTransportadora().getNome().toLowerCase().contains(texto)) {
+            boolean pertenceAoUsuario = isAdmin || r.getCliente().getCodigo() == usuarioLogado.getCodigo();
+            boolean pesquisaTexto = r.getCliente().getNome().toLowerCase().contains(texto) ||
+                    r.getTransportadora().getNome().toLowerCase().contains(texto);
+            if (pertenceAoUsuario && pesquisaTexto) {
                 remessasEncontradas.add(r);
             }
         }
@@ -467,10 +514,10 @@ public class SistemaControle {
                         r.getTransportadora().getNome(),
                         r.getCliente().getNome());
             }
-            algumResultado = true;
+            achou = true;
         }
 
-        if (!algumResultado) {
+        if (!achou) {
             System.out.println("Nenhum resultado encontrado para \"" + texto + "\".");
         }
     }
