@@ -3,13 +3,13 @@ package modelo;
 public class Usuario extends Pessoa {
     private String login;
     private String senha;
-    private String nivelAcesso;
+    private NivelAcesso nivelAcesso;
 
-    public Usuario(int codigo, String nome, String login, String senha, String acesso) {
+    public Usuario(int codigo, String nome, String login, String senha, NivelAcesso nivelAcesso) {
         super(codigo, nome);
         this.login = login;
         this.senha = senha;
-        this.nivelAcesso = acesso;
+        this.nivelAcesso = nivelAcesso;
     }
 // GETS ======================================================
     public String getLogin() {
@@ -20,8 +20,12 @@ public class Usuario extends Pessoa {
         return this.senha;
     }
 
-    public String getNivelAcesso() {
+    public NivelAcesso getNivelAcesso() {
         return this.nivelAcesso;
+    }
+
+    public boolean temPermissao(Permissao p) {
+        return nivelAcesso.temPermissao(p);
     }
 // SETS ======================================================
     public void setLogin(String login) {
@@ -32,8 +36,8 @@ public class Usuario extends Pessoa {
         this.senha = senha;
     }
 
-    public void setNivelAcesso(String acesso) {
-        this.nivelAcesso = acesso;
+    public void setNivelAcesso(NivelAcesso nivelAcesso) {
+        this.nivelAcesso = nivelAcesso;
     }
 
     @Override

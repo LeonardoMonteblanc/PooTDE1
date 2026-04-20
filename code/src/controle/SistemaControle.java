@@ -1,10 +1,8 @@
 package controle;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Scanner; 
 import modelo.*;
 
 public class SistemaControle {
@@ -28,7 +26,7 @@ public class SistemaControle {
         for(Usuario u : usuarios) {
             if(u.getLogin().equals(login) && u.getSenha().equals(senha)) {
                 usuarioLogado = u;
-                System.out.println("Logado como: " + u.getNome() + " - ACESSO: " + u.getNivelAcesso());
+                System.out.println("Logado como: " + u.getNome() + " - ACESSO: " + u.getNivelAcesso().name());
                 return true;
             }
         }
@@ -40,12 +38,12 @@ public class SistemaControle {
         tipo = tipo.toLowerCase();
         switch (tipo) {
             case "usuarios":
-                System.out.println("\n========== USUÁRIOS (" + usuarios.size() + ") ==========");
+                System.out.println("\n========== USUARIOS (" + usuarios.size() + ") ==========");
                 if (usuarios.isEmpty()) {
                     System.out.println("(nenhum usuário cadastrado)");
                 } else {
                     for (Usuario u : usuarios) {
-                        System.out.printf("%s (%s) - %s%n", u.getNome(), u.getLogin(), u.getNivelAcesso());
+                        System.out.printf("%s (%s) - %s%n", u.getNome(), u.getLogin(), u.getNivelAcesso().name());
                     }
                 }
                 break;
@@ -216,67 +214,265 @@ public class SistemaControle {
     }
 
     public void mostrarMenu() {
-        int opcao;
+        int opcao = -1;
         Scanner s = new Scanner(System.in);
 
-        System.out.println("Bem vindo ao sistema de ecoomerce ProtoType");
-        System.out.println("Para iniciamos: digite seu login e senha.");
+        System.out.println("Bem vindo ao sistema de ecommerce ProtoType");
+        System.out.println("Para iniciarmos: digite seu login e senha.");
 
         String username = s.nextLine();
         String senha = s.nextLine();
 
-        if(logar(username, senha)) {
+        if (logar(username, senha)) {
             do {
-            if(usuarioLogado.getNivelAcesso().equals("ADMIN")) {
-                System.out.println("\n1 - Cadastrar\n2 - Alterar\n3 - Excluir\n4 - Consulta por codigo\n5 - Consulta por texto\n6 - Consultar tudo");
-                opcao = s.nextInt();
-                switch(opcao) {
+                if (usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
+                    System.out.println("\n1 - Cadastrar\n2 - Alterar\n3 - Excluir\n4 - Consulta por codigo\n5 - Consulta por texto\n6 - Consultar tudo\n0 - Sair");
+                } else {
+                    System.out.println("\n4 - Consulta por codigo\n5 - Consulta por texto\n6 - Consultar tudo\n0 - Sair");
+                }
+
+                try {
+                    opcao = Integer.parseInt(s.nextLine().trim());
+                } catch (NumberFormatException e) {
+                    opcao = -1;
+                }
+
+                switch (opcao) {
                     case 1:
-                        System.out.println("Cadastrar");
+                        if (usuarioLogado.temPermissao(Permissao.CADASTRAR))
+                            System.out.println("Cadastrar (a implementar)");
+                        else
+                            System.out.println("Acesso negado.");
                         break;
                     case 2:
-                        System.out.println("Alterar");
+                        if (usuarioLogado.temPermissao(Permissao.CADASTRAR))
+                            System.out.println("Alterar (a implementar)");
+                        else
+                            System.out.println("Acesso negado.");
                         break;
                     case 3:
-                        System.out.println("Excluir");
+                        if (usuarioLogado.temPermissao(Permissao.EXCLUIR))
+                            System.out.println("Excluir (a implementar)");
+                        else
+                            System.out.println("Acesso negado.");
                         break;
-                    case 4: 
-                        System.out.println("Consulta por codigo");
+                    case 4:
+                        consultarPorCodigo(s);
                         break;
-                    case 5: 
-                        System.out.println("Consulta por texto");
+                    case 5:
+                        consultarPorTexto(s);
                         break;
                     case 6:
-                        System.out.println("Mostrando todos os dados: ");
                         listar("todos");
                         break;
+                    case 0:
+                        System.out.println("Encerrando sessao. Ate logo!");
+                        break;
                     default:
-                        System.out.println("Nao foi identificado");
-                } 
-                } 
-                else {
-                    System.out.println("4 - Consulta por codigo\n5 - Consulta por texto\n6 - Consultar tudo");
-                    opcao = s.nextInt();
+                        System.out.println("Opcao nao identificada.");
+                }
+            } while (opcao != 0);
+        } else {
+            System.out.println("Login ou senha incorretos.");
+        }
+    }
 
-                    switch(opcao) {
-                        case 4: 
-                            System.out.println("Consulta por codigo");
-                            break;
-                        case 5: 
-                            System.out.println("Consulta por texto");
-                            break;
-                        case 6:
-                            System.out.println("Mostrando todos os dados: ");
+    private void consultarPorCodigo(Scanner s) {
+        System.out.println("\nBuscar por codigo em:");
+        System.out.println("  1 - Usuarios");
+        System.out.println("  2 - Fornecedores");
+        System.out.println("  3 - Produtos");
+        System.out.println("  4 - Transportadoras");
+        System.out.println("  5 - Remessas");
+        System.out.print("Tipo: ");
 
+        int tipo;
+        try {
+            tipo = Integer.parseInt(s.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Tipo invalido.");
+            return;
+        }
 
-                        default:
-                            System.out.println("Nao foi identificado essa opcao");
-                    } 
-                } 
-            }while(opcao != 0);
-        } 
-        
-        
+        System.out.print("Codigo: ");
+        int codigo;
+        try {
+            codigo = Integer.parseInt(s.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Codigo invalido.");
+            return;
+        }
+
+        boolean encontrado = false;
+        switch (tipo) {
+            case 1:
+                for (Usuario u : usuarios) {
+                    if (u.getCodigo() == codigo) {
+                        System.out.printf("%n[Usuario] %s (login: %s) - %s%n",
+                                u.getNome(), u.getLogin(), u.getNivelAcesso());
+                        encontrado = true;
+                        break;
+                    }
+                }
+                break;
+            case 2:
+                for (Fornecedor f : fornecedores) {
+                    if (f.getCodigo() == codigo) {
+                        System.out.printf("%n[Fornecedor] [%d] %s - CNPJ: %s%n",
+                                f.getCodigo(), f.getNome(), f.getCnpj());
+                        encontrado = true;
+                        break;
+                    }
+                }
+                break;
+            case 3:
+                for (Produto p : produtos) {
+                    if (p.getCodigo() == codigo) {
+                        System.out.printf("%n[Produto] [%d] %s - R$ %.2f%n",
+                                p.getCodigo(), p.getDescricao(), p.getPreco());
+                        if (!p.getFornecedores().isEmpty()) {
+                            System.out.print("  Fornecedor(es): ");
+                            for (int i = 0; i < p.getFornecedores().size(); i++) {
+                                System.out.print(p.getFornecedores().get(i).getNome());
+                                if (i < p.getFornecedores().size() - 1) System.out.print(", ");
+                            }
+                            System.out.println();
+                        }
+                        encontrado = true;
+                        break;
+                    }
+                }
+                break;
+            case 4:
+                for (Transportadora t : transportadoras) {
+                    if (t.getCodigo() == codigo) {
+                        System.out.printf("%n[Transportadora] [%d] %s%n",
+                                t.getCodigo(), t.getNome());
+                        encontrado = true;
+                        break;
+                    }
+                }
+                break;
+            case 5:
+                for (Remessa r : remessas) {
+                    if (r.getCodigo() == codigo) {
+                        System.out.printf("%n[Remessa] #%d | Data: %s | Transportadora: %s | Cliente: %s | Pedidos: %d%n",
+                                r.getCodigo(), r.getData(),
+                                r.getTransportadora().getNome(),
+                                r.getCliente().getNome(),
+                                r.getPedidos().size());
+                        encontrado = true;
+                        break;
+                    }
+                }
+                break;
+            default:
+                System.out.println("Tipo invalido.");
+                return;
+        }
+
+        if (!encontrado) {
+            System.out.println("Nenhum registro encontrado com codigo " + codigo + ".");
+        }
+    }
+
+    private void consultarPorTexto(Scanner s) {
+        System.out.print("\nDigite o texto a buscar: ");
+        String texto = s.nextLine().trim().toLowerCase();
+
+        if (texto.isEmpty()) {
+            System.out.println("Texto nao pode ser vazio.");
+            return;
+        }
+
+        boolean algumResultado = false;
+
+        // Usuarios
+        List<Usuario> usuariosEncontrados = new ArrayList<>();
+        for (Usuario u : usuarios) {
+            if (u.getNome().toLowerCase().contains(texto) || u.getLogin().toLowerCase().contains(texto)) {
+                usuariosEncontrados.add(u);
+            }
+        }
+        if (!usuariosEncontrados.isEmpty()) {
+            System.out.println("\n--- Usuarios ---");
+            for (Usuario u : usuariosEncontrados) {
+                System.out.printf("  [%d] %s (login: %s) - %s%n",
+                        u.getCodigo(), u.getNome(), u.getLogin(), u.getNivelAcesso());
+            }
+            algumResultado = true;
+        }
+
+        // Fornecedores
+        List<Fornecedor> fornecedoresEncontrados = new ArrayList<>();
+        for (Fornecedor f : fornecedores) {
+            if (f.getNome().toLowerCase().contains(texto) || f.getCnpj().toLowerCase().contains(texto)) {
+                fornecedoresEncontrados.add(f);
+            }
+        }
+        if (!fornecedoresEncontrados.isEmpty()) {
+            System.out.println("\n--- Fornecedores ---");
+            for (Fornecedor f : fornecedoresEncontrados) {
+                System.out.printf("  [%d] %s - CNPJ: %s%n", f.getCodigo(), f.getNome(), f.getCnpj());
+            }
+            algumResultado = true;
+        }
+
+        // Produtos
+        List<Produto> produtosEncontrados = new ArrayList<>();
+        for (Produto p : produtos) {
+            boolean matchDesc = p.getDescricao().toLowerCase().contains(texto);
+            boolean matchForn = p.getFornecedores().stream()
+                    .anyMatch(f -> f.getNome().toLowerCase().contains(texto));
+            if (matchDesc || matchForn) {
+                produtosEncontrados.add(p);
+            }
+        }
+        if (!produtosEncontrados.isEmpty()) {
+            System.out.println("\n--- Produtos ---");
+            for (Produto p : produtosEncontrados) {
+                System.out.printf("  [%d] %s - R$ %.2f%n", p.getCodigo(), p.getDescricao(), p.getPreco());
+            }
+            algumResultado = true;
+        }
+
+        // Transportadoras
+        List<Transportadora> transportadorasEncontradas = new ArrayList<>();
+        for (Transportadora t : transportadoras) {
+            if (t.getNome().toLowerCase().contains(texto)) {
+                transportadorasEncontradas.add(t);
+            }
+        }
+        if (!transportadorasEncontradas.isEmpty()) {
+            System.out.println("\n--- Transportadoras ---");
+            for (Transportadora t : transportadorasEncontradas) {
+                System.out.printf("  [%d] %s%n", t.getCodigo(), t.getNome());
+            }
+            algumResultado = true;
+        }
+
+        // Remessas (busca por nome do cliente ou da transportadora)
+        List<Remessa> remessasEncontradas = new ArrayList<>();
+        for (Remessa r : remessas) {
+            if (r.getCliente().getNome().toLowerCase().contains(texto) ||
+                    r.getTransportadora().getNome().toLowerCase().contains(texto)) {
+                remessasEncontradas.add(r);
+            }
+        }
+        if (!remessasEncontradas.isEmpty()) {
+            System.out.println("\n--- Remessas ---");
+            for (Remessa r : remessasEncontradas) {
+                System.out.printf("  Remessa #%d | %s | Transportadora: %s | Cliente: %s%n",
+                        r.getCodigo(), r.getData(),
+                        r.getTransportadora().getNome(),
+                        r.getCliente().getNome());
+            }
+            algumResultado = true;
+        }
+
+        if (!algumResultado) {
+            System.out.println("Nenhum resultado encontrado para \"" + texto + "\".");
+        }
     }
 
 

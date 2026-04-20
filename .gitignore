@@ -1,2 +1,4 @@
 arquivos-privados/
 **/.vscode/
+**/bin/
+*.class
