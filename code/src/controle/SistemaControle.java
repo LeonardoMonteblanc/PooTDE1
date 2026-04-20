@@ -266,13 +266,13 @@ public class SistemaControle {
                 switch (opcao) {
                     case 1:
                         if (usuarioLogado.temPermissao(Permissao.CADASTRAR))
-                            System.out.println("Cadastrar (a implementar)");
+                            System.out.println("Cadastrar");
                         else
                             System.out.println("Acesso negado.");
                         break;
                     case 2:
                         if (usuarioLogado.temPermissao(Permissao.CADASTRAR))
-                            System.out.println("Alterar (a implementar)");
+                            System.out.println("Alterar");
                         else
                             System.out.println("Acesso negado.");
                         break;
@@ -303,6 +303,9 @@ public class SistemaControle {
         }
     }
 
+    /**
+     *  Consulta por equals, entao o codigo deve ser exatamento o mesmo
+     */
     private void consultarPorCodigo(Scanner s) {
         boolean isAdmin = usuarioLogado.temPermissao(Permissao.CADASTRAR);
 
@@ -405,15 +408,18 @@ public class SistemaControle {
                 }
                 break;
             default:
-                System.out.println("Tipo invalido.");
                 return;
         }
 
         if (!encontrado) {
-            System.out.println("Nenhum registro encontrado com codigo " + codigo + ".");
+            System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
         }
     }
 
+    /**
+     * Basicamente é tudo por anyMatch, então retorna qualquer coisa
+     * que contenha o texto do parametro, caso tenha permissao
+     */
     private void consultarPorTexto(Scanner s) {
         System.out.print("\nDigite o texto a buscar: ");
         String texto = s.nextLine().trim().toLowerCase();
