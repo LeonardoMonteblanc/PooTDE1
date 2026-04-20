@@ -1,0 +1,7 @@
+- [ ] Ajuste de consulta com permissionamento
+- [ ] Separar funcionalidades do menu (o arquivo tá enorme)
+- [ ] Cadastro de produtos
+- [ ] Cadastro de Fornecedores
+- [ ] Cadastro de Transportadora
+- [ ] Cadastro de Cadastro de Cliente (?)
+- [ ] Criação de Remessa

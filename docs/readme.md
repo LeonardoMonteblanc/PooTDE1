@@ -14,11 +14,12 @@
 ---
 ### O que falta fazer ou pode ser melhorado: 
 
-- Ajustar funcao Listar() 
-- Ajustar funcao mostrarMenu()
-  - Ter em mente que o ajuste disso também implica no ajuste da validacao do usuarioLogado (cliente nao pode acessar informações que não dizem respeito a ele)
-- Implementar cadastro, exclusao, alteracao = por input do usuario
-- Implementar pesquisa por codigo ou nome 
+- [ ] Ajustar funcao Listar() 
+- [ ] Ajustar funcao mostrarMenu()
+  - [ ] Separar a funções do menu para diminuição do código de controle
+  - [ ] Ter em mente que o ajuste disso também implica no ajuste da validacao do usuarioLogado (cliente nao pode acessar informações que não dizem respeito a ele)
+- [ ] Implementar cadastro, exclusao, alteracao = por input do usuario
+- [ ] Implementar pesquisa por codigo ou nome 
 
 
 

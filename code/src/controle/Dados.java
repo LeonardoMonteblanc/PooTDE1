@@ -6,6 +6,7 @@ import modelo.*;
 
 import modelo.Fornecedor;
 import modelo.Pedido;
+import modelo.NivelAcesso;
 import modelo.Produto;
 import modelo.Remessa;
 import modelo.Transportadora;
@@ -20,10 +21,10 @@ public class Dados {
     public List<Remessa> remessas = new ArrayList<>();
 
     public void carregarDados() {
-        Usuario admin = new Usuario(1, "Marina Souza", "admin", "123", "ADMIN");
-        Usuario cliente = new Usuario(2, "Carlos Oliveira", "carlos", "123", "CLIENTE");
-        Usuario leo = new Usuario(3, "Leonardo", "leo", "123", "ADMIN");
-        Usuario vitor = new Usuario(4, "Vitor", "Vitor", "123", "ADMIN");
+        Usuario admin = new Usuario(1, "Marina Souza", "admin", "123", NivelAcesso.ADMIN);
+        Usuario cliente = new Usuario(2, "Carlos Oliveira", "carlos", "123", NivelAcesso.CLIENTE);
+        Usuario leo = new Usuario(3, "Leonardo", "leo", "123", NivelAcesso.ADMIN);
+        Usuario vitor = new Usuario(4, "Vitor", "vitor", "123", NivelAcesso.ADMIN);
         usuarios.add(leo);
         usuarios.add(vitor);
         usuarios.add(admin);
