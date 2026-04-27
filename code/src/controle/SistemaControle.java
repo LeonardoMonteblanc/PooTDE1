@@ -6,7 +6,6 @@ import java.util.Scanner;
 import modelo.*;
 
 public class SistemaControle {
-    private List<Usuario> usuarios = new ArrayList<>();
     private List<Fornecedor> fornecedores = new ArrayList<>();
     private List<Produto> produtos = new ArrayList<>();
     private List<Remessa> remessas = new ArrayList<>();
@@ -22,16 +21,7 @@ public class SistemaControle {
     }
 
 
-    public boolean logar(String login, String senha) {
-        for(Usuario u : usuarios) {
-            if(u.getLogin().equals(login) && u.getSenha().equals(senha)) {
-                usuarioLogado = u;
-                System.out.println("Logado como: " + u.getNome() + " - ACESSO: " + u.getNivelAcesso().name());
-                return true;
-            }
-        }
-        return false;
-    }
+
 
 
     public void listar(String tipo) {

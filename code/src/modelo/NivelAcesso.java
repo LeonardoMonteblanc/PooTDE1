@@ -8,8 +8,8 @@ import java.util.Set;
  * e mais flexivel para caso surgir novos niveis
  */
 public enum NivelAcesso {
-    CLIENTE(EnumSet.of(Permissao.CONSULTAR)),
-    ADMIN(EnumSet.of(Permissao.CONSULTAR, Permissao.CADASTRAR, Permissao.EXCLUIR));
+    CLIENTE(EnumSet.of(Permissao.CONSULTAR, Permissao.FAZER_PEDIDO)),
+    ADMIN(EnumSet.of(Permissao.CONSULTAR, Permissao.CADASTRAR, Permissao.EXCLUIR,Permissao.ALTERAR));
 
     private final Set<Permissao> permissoes;
 

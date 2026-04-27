@@ -1,5 +1,5 @@
 package modelo;
 
 public enum Permissao {
-    CONSULTAR, CADASTRAR, EXCLUIR
+    CONSULTAR, CADASTRAR, EXCLUIR, ALTERAR, FAZER_PEDIDO;
 }
