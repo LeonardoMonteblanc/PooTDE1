@@ -21,7 +21,12 @@
 - [ ] Implementar cadastro, exclusao, alteracao = por input do usuario
 - [ ] Implementar pesquisa por codigo ou nome 
 
-
+===================================
+### MAIS UM TODO LIST
+- [] SistemaControle ==> Dividir em outras classes
+  - [] Classe de Menu ==> Gerencia os acessos a partir do login
+  
+    
 
 ### Para realizar login no sistema:
 ```
