@@ -200,7 +200,8 @@ public class MenuControle {
         System.out.println("Descrição: ");
         String desc = scanner.nextLine();
         System.out.println("Preço: ");
-        double preco = scanner.nextDouble();
+        String precoStr = scanner.nextLine().replace(",", ".");
+        double preco = Double.parseDouble(precoStr);
         Produto novoProd = new Produto(cod, desc, preco);
         sistema.getProdutos().add(novoProd);
         System.out.println("✓ Produto cadastrado!");
