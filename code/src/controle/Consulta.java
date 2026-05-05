@@ -79,25 +79,6 @@ public class Consulta {
         System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
     }
 
-    // public void consultarPorTexto(String texto) {
-    //     if (texto == null || texto.trim().isEmpty()) {
-    //         System.out.println("Texto nao pode ser vazio.");
-    //         return;
-    //     }
-
-    //     String textoBusca = texto.toLowerCase();
-    //     boolean achou = false;
-
-    //     achou |= consultarUsuariosPorTexto(textoBusca);
-    //     achou |= consultarFornecedoresPorTexto(textoBusca);
-    //     achou |= consultarProdutosPorTexto(textoBusca);
-    //     achou |= consultarTransportadorasPorTexto(textoBusca);
-    //     //achou |= consultarRemessasPorTexto(textoBusca);
-
-    //     if (!achou) {
-    //         System.out.println("Nenhum resultado encontrado para \"" + texto + "\".");
-    //     }
-    // }
 
     public boolean consultarUsuariosPorTexto(String texto) {
         List<Usuario> usuarios = sistema.getUsuarios();
