@@ -1,34 +1,26 @@
 ### Orientações
 
-- `/docs`: documentação do projeto: Diagrama e orientações do trabalho
-- `/code`: projeto java
-  - `/scr`: source do projeto e Main.java
-
-  **Packages:**
-    - `/modelo`: classes do projeto - getters/setters 
-    - `/controle`: logica do projeto
-
-
-<br>
+- `/docs`: documentação do trabalho
+- `/code`: projeto Java
+  - `/src`: código-fonte
+  - `/modelo`: entidades do domínio
+  - `/controle`: regras e fluxo do sistema
 
 ---
-### O que falta fazer ou pode ser melhorado: 
+### Status do desenvolvimento
 
-- [ ] Ajustar funcao Listar() 
-- [ ] Ajustar funcao mostrarMenu()
-  - [ ] Separar a funções do menu para diminuição do código de controle
-  - [ ] Ter em mente que o ajuste disso também implica no ajuste da validacao do usuarioLogado (cliente nao pode acessar informações que não dizem respeito a ele)
-- [ ] Implementar cadastro, exclusao, alteracao = por input do usuario
-- [ ] Implementar pesquisa por codigo ou nome 
+- [x] Ajustar listagem
+- [x] Ajustar menu e separar responsabilidades
+- [x] Implementar cadastro por input
+- [x] Implementar pesquisa por código ou texto
+- [x] Ajustar permissões de acesso
+- [ ] Implementar exclusão por input
+- [ ] Implementar alteração por input
+- [ ] Implementar criação de remessa/pedido
 
-===================================
-### MAIS UM TODO LIST
-- [] SistemaControle ==> Dividir em outras classes
-  - [] Classe de Menu ==> Gerencia os acessos a partir do login
-  
-    
+---
+### Login de teste
 
-### Para realizar login no sistema:
 ```
 login: leo
 senha: 123
@@ -36,9 +28,9 @@ senha: 123
 login: vitor
 senha: 123
 ```
----
 
-### Documentação:
+---
+### Fluxo de negócio
 ```
 src/
 ├── controle/
@@ -54,68 +46,106 @@ src/
     ├── Pedido.java
     └── Remessa.java
 ```
-
-### Fluxo: 
 ```
-  - Usuario seleciona um produto
-    - Um pedido é criado
-    - Pedido possui uma lista de produtos e quantidades (ItemPedido)
-    - Após conclusao do pedido cria-se uma remessa
-    - Remessa possui uma lista de pedidos 
+Usuário seleciona produto
+-> sistema cria/adiciona ItemPedido
+-> ItemPedido compõe Pedido
+-> Pedido compõe Remessa
 ```
 
-## Package `modelo`
-
-### `Pessoa` (abstrata)
-
-### `Usuario extends Pessoa`
-- `nivelAcesso` (`"ADMIN"` ou `"CLIENTE"`)
-
-### `Fornecedor extends Pessoa`
-### `Transportadora extends Pessoa`
-- herda código e nome.
-
-### `Produto`
-- **Atributos privados:** `int codigo`, `String descricao`, `double preco`, `List<Fornecedor> fornecedores`
-- **Construtores:**
-  - `Produto(int codigo, String descricao, double preco, Fornecedor... fornecedores)`
-- **Métodos:** `adicionarFornecedor(Fornecedor f)`, getters/setters.
-- **Associação:** o produto conhece seus fornecedores
-
-### `ItemPedido`
-- **Atributos privados:** `Produto produto`, `int quantidade`
-
-### `Pedido`
-- **Atributo privado:** `ArrayList<ItemPedido> itens`
-- **Métodos:**
-  - `adicionarItem(Produto p, int qtd)`: se o produto já estiver na lista, soma a quantidade; senão, adiciona novo `ItemPedido`.
-  - `removerItem(Produto p)`: remove a primeira ocorrência do produto
-
-### `Remessa`
-- **Atributos privados:**
-  - `int codigo`
-  - `LocalDate data` (inicializado com `LocalDate.now()`)
-  - `Transportadora transportadora`
-  - `Usuario cliente`
-  - `List<Pedido> pedidos`
-- **Métodos:** `adicionarPedido(Pedido p)`, `removerPedido(Pedido p)`
 ---
+### Estrutura do domínio
 
-## Package `controle`
+#### modelo
+- `Pessoa` (base de usuário, fornecedor, transportadora)
+- `Usuario` (nome, login, senha, nível de acesso)
+- `Fornecedor`
+- `Transportadora`
+- `Produto` (código, descrição, preço, fornecedores)
+- `ItemPedido` (produto, quantidade)
+- `Pedido` (lista de itens)
+- `Remessa` (data, transportadora, cliente, pedidos)
 
-### `Dados`
-- **Atributos públicos:**
-  - `List<Usuario> usuarios`
-  - `List<Fornecedor> fornecedores`
-  - `List<Produto> produtos`
-  - `List<Transportadora> transportadoras`
-  - `List<Remessa> remessas`
-- **Método `carregar()`:** popula todas as listas com dados fictícios (2 usuários, 3 fornecedores, 21 produtos, 3 transportadoras, 4 remessas completas com pedidos e itens).
+#### controle
+- `Dados`: carga inicial de dados em memória
+- `SistemaControle`: orquestra login, sessão e menus
+- `MenuControle`: ações por módulo (listar, consultar, cadastrar)
+- `Listagem`: impressão formatada das entidades
+- `Consulta`: busca por código e texto
 
-### `SistemaControle`
-- **Atributos privados:** as cinco listas de dados + `Usuario usuarioLogado`
-- **Construtor:** `SistemaControle(Dados d)` – compartilha as referências das listas.
-- **Métodos:**
-  - `boolean logar(String login, String senha)`: autentica o usuário; se encontrado, define `usuarioLogado` e retorna `true`.
-  - `void listar(String tipo)`: exibe os dados conforme o parâmetro (`"usuarios"`, `"fornecedores"`, `"produtos"`, `"transportadoras"`, `"remessas"`, `"todos"`).
-  - `void exibirMenu()`: loop principal com opções de listagem, respeitando o perfil do usuário logado (em desenvolvimento).
+#### ordem de chamadas (execução)
+
+**1. Inicialização**
+```text
+App.main()
+  -> Dados.carregarDados()
+  -> new SistemaControle(dados)
+```
+
+**2. Autenticação**
+```text
+SistemaControle.validarLogin()
+  -> MenuControle.inputLogin()
+  -> Login.logar(login, senha)
+```
+
+**3. Entrada no sistema**
+```text
+SistemaControle.menu()
+```
+
+**4. Fluxos de produtos**
+```text
+Listar:
+SistemaControle.menu()
+  -> MenuControle.gerenciarProdutos()
+  -> Listagem.listarProdutos()
+
+Consultar por código:
+SistemaControle.menu()
+  -> MenuControle.gerenciarProdutos()
+  -> Consulta.consultarProdutoPorCodigo(codigo)
+
+Consultar por texto:
+SistemaControle.menu()
+  -> MenuControle.gerenciarProdutos()
+  -> Consulta.consultarProdutosPorTexto(texto)
+
+Cadastrar:
+SistemaControle.menu()
+  -> MenuControle.gerenciarProdutos()
+  -> MenuControle.cadastrarProduto()
+  -> new Produto(...)
+  -> sistema.getProdutos().add(...)
+```
+
+**5. Fluxos de cadastro (demais módulos)**
+```text
+Fornecedor:
+SistemaControle.menu()
+  -> MenuControle.gerenciarFornecedores()
+  -> MenuControle.cadastrarFornecedor()
+  -> new Fornecedor(...)
+  -> sistema.getFornecedores().add(...)
+
+Usuário:
+SistemaControle.menu()
+  -> MenuControle.gerenciarUsuarios()
+  -> MenuControle.cadastrarUsuario()
+  -> new Usuario(...)
+  -> sistema.getUsuarios().add(...)
+
+Transportadora:
+SistemaControle.menu()
+  -> MenuControle.gerenciarTransportadoras()
+  -> MenuControle.cadastrarTransportadora()
+  -> new Transportadora(...)
+  -> sistema.getTransportadora().add(...)
+```
+
+**6. Fluxo de remessas**
+```text
+SistemaControle.menu()
+  -> MenuControle.gerenciarPedidos()
+  -> Listagem.listarRemessas()
+```

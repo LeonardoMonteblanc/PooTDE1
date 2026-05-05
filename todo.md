@@ -1,9 +1,0 @@
-- [x] Ajuste de consulta com permissionamento
-- [x] Separar funcionalidades do menu (o arquivo tá enorme)
-- [x] Cadastro de produtos
-- [x] Cadastro de Fornecedores
-- [x] Cadastro de Transportadora
-- [ ] Cadastro de Cadastro de Cliente (?)
-- [ ] Criação de Remessa / pedido
-- [ ] Função de alterar
-- [ ] Função de excluir
