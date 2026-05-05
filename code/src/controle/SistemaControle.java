@@ -17,6 +17,7 @@ public class SistemaControle {
     private List<Transportadora> transportadoras  = new ArrayList<>();
     private Dados dados;
     private MenuControle menuControle;
+    private final Scanner scanner = new Scanner(System.in);
 
     public SistemaControle(Dados d) {
         this.dados = d;
@@ -25,6 +26,9 @@ public class SistemaControle {
         produtos = d.produtos;
         transportadoras = d.transportadoras;
         remessas = d.remessas;
+        Listagem listagem = new Listagem(this);
+        Consulta consulta = new Consulta(this);
+        this.menuControle = new MenuControle(this, listagem, consulta, scanner);
     }
     
     public Usuario getUsuarioLogado() {
@@ -69,12 +73,12 @@ public class SistemaControle {
     public void menu(){
         int opcao;
         boolean executar = true;
-        while (executar) {
-            Scanner s = new Scanner(System.in);
 
-            System.out.println("\n=== MENU ADMIN ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n6. Remessas\n0. Sair");
+        while (executar) {
+
+            System.out.println("\n=== MENU ADMIN ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n0. Sair");
             System.out.println("Digite o modulo que deseja acessar: ");
-            opcao = s.nextInt();
+            opcao = scanner.nextInt();
 
             switch (opcao) {
               case 1 -> menuControle.gerenciarProdutos();
@@ -83,7 +87,7 @@ public class SistemaControle {
               case 4 -> menuControle.gerenciarTransportadoras();
               case 5 -> menuControle.gerenciarPedidos();
               case 0 -> {
-                  System.out.println("Saindo do sistema....'");
+                  System.out.println("Saindo do sistema....");
                   executar = false;
               }
               default -> System.out.println("Opcao inválida!");

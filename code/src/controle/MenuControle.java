@@ -1,7 +1,7 @@
 package controle;
 
 import java.util.Scanner;
-import modelo.NivelAcesso;
+import modelo.*;
 
 public class MenuControle {
     private SistemaControle sistema;
@@ -9,24 +9,13 @@ public class MenuControle {
     private Scanner scanner;
     private Consulta sisConsulta;
     // receber inputs do usuario e manipular o menu
-    public MenuControle(SistemaControle sis, Listagem lis, Consulta cos) {
+    public MenuControle(SistemaControle sis, Listagem lis, Consulta cos, Scanner scan) {
         this.sistema = sis;
         this.sisListagem = lis;
         this.sisConsulta = cos;
-        this.scanner = new Scanner(System.in);
+        this.scanner = scan;
     }
-    /**
-     * Solicita ao usuário o login e a senha via console.
-     *
-     * <p>O método lê as credenciais digitadas pelo usuário e as retorna em um
-     * vetor de strings, onde:
-     * <ul>
-     *   <li>índice {@code 0} contém o login</li>
-     *   <li>índice {@code 1} contém a senha</li>
-     * </ul>
-     *
-     * @return um array de {@code String} contendo login e senha do usuário
-     */
+
     public String[] inputLogin() {
 
         System.out.println("Digite o login do usuario: ");
@@ -40,11 +29,13 @@ public class MenuControle {
 
     public int validarAcao() {
         int opcao;
+        boolean admin = sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN;
+
         System.out.println("Digite a acao desejada: ");
         System.out.println("1. Listar");
         System.out.println("2. Consultar");
 
-        if(sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN) {
+        if(admin) {
             System.out.println("3. Cadastrar");
             System.out.println("4. Alterar");
             System.out.println("5. Excluir");
@@ -53,13 +44,16 @@ public class MenuControle {
 
         opcao = scanner.nextInt();
 
-        if(sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN) {
+        if(admin && (opcao >= 0 && opcao <= 5)) {
             return opcao;
-        } else if(opcao != 1 || opcao != 2) {
-            System.out.println("Opcao invalida para seu perfil de acesso!");
-            validarAcao();
+        } 
+
+        if(!admin && (opcao == 0 || opcao == 1 || opcao == 2)) {
+            return opcao;
         }
-        return opcao;
+        
+        System.out.println("Opcao indisponivel para seu nivel de acesso");
+        return validarAcao();
 
         }
 
@@ -71,7 +65,7 @@ public class MenuControle {
                 sisListagem.listarProdutos();
                 break;
             case 2:
-                System.out.println("1. Consulta por texto:\n2. Consulta por código");
+                System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
                     int codigo = scanner.nextInt();
@@ -84,7 +78,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                cadastrarProduto();
                 break;
             case 4:
                 System.out.println("alterar");
@@ -105,7 +99,7 @@ public class MenuControle {
                 sisListagem.listarFornecedores();
                 break;
             case 2:
-                System.out.println("1. Consulta por texto:\n2. Consulta por código");
+                System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
                     int codigo = scanner.nextInt();
@@ -118,7 +112,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                cadastrarFornecedor();
                 break;
             case 4:
                 System.out.println("alterar");
@@ -138,7 +132,7 @@ public class MenuControle {
                 sisListagem.listarUsuarios();
                 break;
             case 2:
-                System.out.println("1. Consulta por texto:\n2. Consulta por código");
+                System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
                     int codigo = scanner.nextInt();
@@ -151,7 +145,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                cadastrarUsuario();
                 break;
             case 4:
                 System.out.println("alterar");
@@ -172,7 +166,7 @@ public class MenuControle {
                 sisListagem.listarTransportadoras();
                 break;
             case 2:
-                System.out.println("1. Consulta por texto:\n2. Consulta por código");
+                System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
                     int codigo = scanner.nextInt();
@@ -185,7 +179,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                cadastrarTransportadora();
                 break;
             case 4:
                 System.out.println("alterar");
@@ -198,6 +192,65 @@ public class MenuControle {
         }
     }
 
+    private void cadastrarProduto() {
+        System.out.println("=== Cadastrar Produto ===");
+        System.out.println("Código: ");
+        int cod = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Descrição: ");
+        String desc = scanner.nextLine();
+        System.out.println("Preço: ");
+        double preco = scanner.nextDouble();
+        Produto novoProd = new Produto(cod, desc, preco);
+        sistema.getProdutos().add(novoProd);
+        System.out.println("✓ Produto cadastrado!");
+    }
+
+    private void cadastrarFornecedor() {
+        System.out.println("=== Cadastrar Fornecedor ===");
+        System.out.println("Código: ");
+        int cod = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.println("CNPJ: ");
+        String cnpj = scanner.nextLine();
+        Fornecedor novoFor = new Fornecedor(cod, nome, cnpj);
+        sistema.getFornecedores().add(novoFor);
+        System.out.println("✓ Fornecedor cadastrado!");
+    }
+
+    private void cadastrarUsuario() {
+        System.out.println("=== Cadastrar Usuário ===");
+        System.out.println("Código: ");
+        int cod = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Nome: ");
+        String nome = scanner.nextLine();
+        System.out.println("Login: ");
+        String login = scanner.nextLine();
+        System.out.println("Senha: ");
+        String senha = scanner.nextLine();
+        System.out.println("Nível de acesso (ADMIN/CLIENTE): ");
+        String nivel = scanner.nextLine().toUpperCase();
+        NivelAcesso nivelAcesso = NivelAcesso.valueOf(nivel);
+        Usuario novoUser = new Usuario(cod, nome, login, senha, nivelAcesso);
+        sistema.getUsuarios().add(novoUser);
+        System.out.println("✓ Usuário cadastrado!");
+    }
+
+    private void cadastrarTransportadora() {
+        System.out.println("=== Cadastrar Transportadora ===");
+        System.out.println("Código: ");
+        int cod = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Nome: ");
+        String nome = scanner.nextLine();
+        Transportadora novaTransp = new Transportadora(cod, nome);
+        sistema.getTransportadora().add(novaTransp);
+        System.out.println("✓ Transportadora cadastrada!");
+    }
+
     public void gerenciarPedidos() {
         int opcao = validarAcao();
 
@@ -206,7 +259,7 @@ public class MenuControle {
                 sisListagem.listarRemessas();
                 break;
             case 2:
-                System.out.println("1. Consulta por texto:\n2. Consulta por código");
+                System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
                     int codigo = scanner.nextInt();

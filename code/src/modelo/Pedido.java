@@ -5,13 +5,13 @@ import java.util.Iterator;
 public class Pedido {
     private ArrayList<ItemPedido> itens = new ArrayList<>();
     
-    public Pedido(){
+    // public Pedido(){
 
-    }
+    // }
 
     public void adicionarItem(Produto p, int qtd) {
         for(ItemPedido i : itens ) {
-            if(i.getProduto().equals(p)) {
+            if(i.getProduto().getCodigo() == p.getCodigo()) {
                 i.setQuantidade(i.getQuantidade() + qtd);
                 return;
             } 
