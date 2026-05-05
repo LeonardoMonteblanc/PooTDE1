@@ -4,14 +4,6 @@ import java.util.List;
 
 import modelo.*;
 
-import modelo.Fornecedor;
-import modelo.Pedido;
-import modelo.NivelAcesso;
-import modelo.Produto;
-import modelo.Remessa;
-import modelo.Transportadora;
-import modelo.Usuario;
-
 public class Dados {
 
     public List<Usuario> usuarios = new ArrayList<>();

@@ -2,7 +2,7 @@ import controle.Dados;
 import controle.SistemaControle;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main() {
         System.out.println("TDE1 - Java");
 
         Dados infos = new Dados();
@@ -10,7 +10,9 @@ public class App {
 
         SistemaControle gerenciador = new SistemaControle(infos);
 
-        gerenciador.mostrarMenu();
+        if(gerenciador.validarLogin()) {
+            gerenciador.menu();
+        } 
 
 
     }

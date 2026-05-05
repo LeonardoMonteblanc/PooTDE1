@@ -3,521 +3,99 @@ package controle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import modelo.*;
 
+// Consolida todas as informações que o sistema precisa
+// a partir de novas instancias isso é levado para outras classes
 public class SistemaControle {
     private List<Fornecedor> fornecedores = new ArrayList<>();
     private List<Produto> produtos = new ArrayList<>();
     private List<Remessa> remessas = new ArrayList<>();
     private Usuario usuarioLogado;
+    private List<Usuario> usuarios = new ArrayList<>();
     private List<Transportadora> transportadoras  = new ArrayList<>();
+    private Dados dados;
+    private MenuControle menuControle;
 
     public SistemaControle(Dados d) {
+        this.dados = d;
         usuarios = d.usuarios;
         fornecedores = d.fornecedores;
         produtos = d.produtos;
         transportadoras = d.transportadoras;
         remessas = d.remessas;
     }
-
-
-
-
-
-    public void listar(String tipo) {
-        tipo = tipo.toLowerCase();
-        switch (tipo) {
-            case "usuarios":
-                if (!usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
-                    System.out.println("Acesso negado- apenas administradores podem consultar usuarios");
-                    break;
-                }
-                System.out.println("\n========== USUARIOS (" + usuarios.size() + ") ==========");
-                if (usuarios.isEmpty()) {
-                    System.out.println("(nenhum usuário cadastrado)");
-                } else {
-                    for (Usuario u : usuarios) {
-                        System.out.printf("%s (%s) - %s%n", u.getNome(), u.getLogin(), u.getNivelAcesso().name());
-                    }
-                }
-                break;
-
-            case "fornecedores":
-                if (!usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
-                    System.out.println("Acesso negado - apenas administradores podem consultar fornecedores");
-                    break;
-                }
-                System.out.println("\n========== FORNECEDORES (" + fornecedores.size() + ") ==========");
-                if (fornecedores.isEmpty()) {
-                    System.out.println("  (nenhum fornecedor cadastrado)");
-                } else {
-                    for (Fornecedor f : fornecedores) {
-                        System.out.printf("[%03d] %s - CNPJ: %s%n", f.getCodigo(), f.getNome(), f.getCnpj());
-                    }
-                }
-                break;
-
-    case "produtos":
-        System.out.println("\n========== PRODUTOS (" + produtos.size() + ") ==========");
-        if (produtos.isEmpty()) {
-            System.out.println("(nenhum produto cadastrado)");
-        } else {
-            // Primeira passada: calcular larguras máximas
-            int maxCodigo = "CÓDIGO".length();
-            int maxDescricao = "DESCRIÇÃO".length();
-            int maxPreco = "PREÇO".length();
-            int maxFornecedores = "FORNECEDORES".length();
-            
-            for (Produto p : produtos) {
-                maxCodigo = Math.max(maxCodigo, String.valueOf(p.getCodigo()).length());
-                maxDescricao = Math.max(maxDescricao, p.getDescricao().length());
-                String precoStr = String.format("R$ %.2f", p.getPreco());
-                maxPreco = Math.max(maxPreco, precoStr.length());
-                
-                if (!p.getFornecedores().isEmpty()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < p.getFornecedores().size(); i++) {
-                        sb.append(p.getFornecedores().get(i).getNome());
-                        if (i < p.getFornecedores().size() - 1) sb.append(", ");
-                    }
-                    maxFornecedores = Math.max(maxFornecedores, sb.length());
-                }
-            }
-            
-            // Adiciona um pequeno espaçamento
-            maxCodigo += 2;
-            maxDescricao += 2;
-            maxPreco += 2;
-            maxFornecedores += 2;
-            
-            // Cabeçalho
-            String formato = "%-" + maxCodigo + "s %-" + maxDescricao + "s %-" + maxPreco + "s %-" + maxFornecedores + "s%n";
-            System.out.printf(formato, "CÓDIGO", "DESCRIÇÃO", "PREÇO", "FORNECEDORES");
-            
-            // Linha separadora
-            int totalLargura = maxCodigo + maxDescricao + maxPreco + maxFornecedores + 3;
-            System.out.println("-".repeat(totalLargura));
-            
-            // Impressão dos dados
-            for (Produto p : produtos) {
-                String precoStr = String.format("R$ %.2f", p.getPreco());
-                String fornecedoresStr = "";
-                if (!p.getFornecedores().isEmpty()) {
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < p.getFornecedores().size(); i++) {
-                        sb.append(p.getFornecedores().get(i).getNome());
-                        if (i < p.getFornecedores().size() - 1) sb.append(", ");
-                    }
-                    fornecedoresStr = sb.toString();
-                }
-                System.out.printf(formato,String.valueOf(p.getCodigo()),p.getDescricao(),precoStr,fornecedoresStr);
-            }
-        }
-        break;
-
-            case "transportadoras":
-                if (!usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
-                    System.out.println("Acesso negado-  apenas administradores podem consultar transportadoras");
-                    break;
-                }
-                System.out.println("\n========== TRANSPORTADORAS (" + transportadoras.size() + ") ==========");
-                if (transportadoras.isEmpty()) {
-                    System.out.println("  (nenhuma transportadora cadastrada)");
-                } else {
-                    for (Transportadora t : transportadoras) {
-                        System.out.printf("[%03d] %s%n", t.getCodigo(), t.getNome());
-                    }
-                }
-                break;
-
-    case "remessas":
-        List<Remessa> remessasVisiveis = new ArrayList<>();
-        for (Remessa r : remessas) {
-            if (usuarioLogado.temPermissao(Permissao.CADASTRAR) ||
-                    r.getCliente().getCodigo() == usuarioLogado.getCodigo()) {
-                remessasVisiveis.add(r);
-            }
-        }
-        System.out.println("\n========== REMESSAS (" + remessasVisiveis.size() + ") ==========");
-        if (remessasVisiveis.isEmpty()) {
-            System.out.println("  (nenhuma remessa encontrada)");
-        } else {
-            for (Remessa r : remessasVisiveis) {
-                // Cabeçalho da remessa
-                System.out.printf("%n>> REMESSA #%d <<%n", r.getCodigo());
-                System.out.printf("   Data: %s | Transportadora: %s%n", 
-                                r.getData(), r.getTransportadora().getNome());
-                System.out.printf("   Cliente: %s%n", r.getCliente().getNome());
-                
-                List<Pedido> pedidos = r.getPedidos();
-                if (pedidos.isEmpty()) {
-                    System.out.println("   (nenhum pedido)");
-                    continue;
-                }
-                
-                int numPedido = 1;
-                for (Pedido ped : pedidos) {
-                    System.out.printf("%n   --- PEDIDO %d ---%n", numPedido++);
-                    List<ItemPedido> itens = ped.getItens();
-                    if (itens.isEmpty()) {
-                        System.out.println("   (sem itens)");
-                        continue;
-                    }
-                    
-                    // Calcular larguras máximas para as colunas dos itens
-                    int maxDesc = "Descrição".length();
-                    int maxQtd = "Qtd".length();
-                    int maxPrecoUn = "Preço Un.".length();
-                    int maxPrecoTot = "Total".length();
-                    
-                    for (ItemPedido item : itens) {
-                        maxDesc = Math.max(maxDesc, item.getProduto().getDescricao().length());
-                        maxQtd = Math.max(maxQtd, String.valueOf(item.getQuantidade()).length());
-                        String precoUn = String.format("%.2f", item.getProduto().getPreco());
-                        maxPrecoUn = Math.max(maxPrecoUn, precoUn.length());
-                        String precoTot = String.format("%.2f", item.getQuantidade() * item.getProduto().getPreco());
-                        maxPrecoTot = Math.max(maxPrecoTot, precoTot.length());
-                    }
-                    
-                    // Adiciona espaçamento
-                    maxDesc += 2;
-                    maxQtd += 2;
-                    maxPrecoUn += 2;
-                    maxPrecoTot += 2;
-                    
-                    String formato = "   %-" + maxDesc + "s %" + maxQtd + "s  R$ %" + maxPrecoUn + "s  R$ %" + maxPrecoTot + "s%n";
-                    
-                    // Cabeçalho da tabela de itens
-                    System.out.printf(formato, "Descrição", "Qtd", "Preço Un.", "Total");
-                    
-                    // Linha separadora
-                    int larguraTotal = maxDesc + maxQtd + maxPrecoUn + maxPrecoTot + 12; // ajuste para espaços extras
-                    System.out.println("   " + "-".repeat(larguraTotal));
-                    
-                    // Itens
-                    for (ItemPedido item : itens) {
-                        String desc = item.getProduto().getDescricao();
-                        String qtd = String.valueOf(item.getQuantidade());
-                        String precoUn = String.format("%.2f", item.getProduto().getPreco());
-                        String precoTot = String.format("%.2f", item.getQuantidade() * item.getProduto().getPreco());
-                        System.out.printf(formato, desc, qtd, precoUn, precoTot);
-                    }
-                    System.out.println("   " + "-".repeat(larguraTotal));
-
-                }
-            }
-        }
-        break;
-
-            case "todos":
-                if (usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
-                    listar("usuarios");
-                    listar("fornecedores");
-                    listar("produtos");
-                    listar("transportadoras");
-                    listar("remessas");
-                } else {
-                    listar("produtos");
-                    listar("remessas");
-                }
-                break;
-
-            default:
-                System.out.println("Opção inválida: '" + tipo + "'. Use: usuarios, fornecedores, produtos, transportadoras, remessas, todos.");
-        }
+    
+    public Usuario getUsuarioLogado() {
+        return usuarioLogado;
     }
 
-    public void mostrarMenu() {
-        int opcao = -1;
-        Scanner s = new Scanner(System.in);
-
-        System.out.println("Bem vindo ao sistema de ecommerce ProtoType");
-        System.out.println("Para iniciarmos: digite seu login e senha.");
-
-        System.out.print("Login: ");
-        String username = s.nextLine();
-        System.out.print("Senha: ");
-        String senha = s.nextLine();
-
-        if (logar(username, senha)) {
-            do {
-                if (usuarioLogado.temPermissao(Permissao.CADASTRAR)) {
-                    System.out.println("\n1 - Cadastrar\n2 - Alterar\n3 - Excluir\n4 - Consulta por codigo\n5 - Consulta por texto\n6 - Consultar tudo\n0 - Sair");
-                } else {
-                    System.out.println("\n4 - Consulta por codigo\n5 - Consulta por texto\n6 - Consultar tudo\n0 - Sair");
-                }
-
-                try {
-                    opcao = Integer.parseInt(s.nextLine().trim());
-                } catch (NumberFormatException e) {
-                    opcao = -1;
-                }
-
-                switch (opcao) {
-                    case 1:
-                        if (usuarioLogado.temPermissao(Permissao.CADASTRAR))
-                            System.out.println("Cadastrar");
-                        else
-                            System.out.println("Acesso negado.");
-                        break;
-                    case 2:
-                        if (usuarioLogado.temPermissao(Permissao.CADASTRAR))
-                            System.out.println("Alterar");
-                        else
-                            System.out.println("Acesso negado.");
-                        break;
-                    case 3:
-                        if (usuarioLogado.temPermissao(Permissao.EXCLUIR))
-                            System.out.println("Excluir (a implementar)");
-                        else
-                            System.out.println("Acesso negado.");
-                        break;
-                    case 4:
-                        consultarPorCodigo(s);
-                        break;
-                    case 5:
-                        consultarPorTexto(s);
-                        break;
-                    case 6:
-                        listar("todos");
-                        break;
-                    case 0:
-                        System.out.println("Encerrando sessao. Ate logo!");
-                        break;
-                    default:
-                        System.out.println("Opcao nao identificada.");
-                }
-            } while (opcao != 0);
-        } else {
-            System.out.println("Login ou senha incorretos.");
-        }
+    public List<Transportadora> getTransportadora(){
+        return transportadoras;
     }
 
-    /**
-     *  Consulta por equals, entao o codigo deve ser exatamento o mesmo
-     */
-    private void consultarPorCodigo(Scanner s) {
-        boolean isAdmin = usuarioLogado.temPermissao(Permissao.CADASTRAR);
-
-        System.out.println("\nBuscar por codigo em:");
-        if (isAdmin) {
-            System.out.println("  1 - Usuarios");
-            System.out.println("  2 - Fornecedores");
-        }
-        System.out.println("  3 - Produtos");
-        if (isAdmin) {
-            System.out.println("  4 - Transportadoras");
-        }
-        System.out.println("  5 - Remessas");
-        System.out.print("Tipo: ");
-
-        int tipo;
-        try {
-            tipo = Integer.parseInt(s.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Tipo invalido.");
-            return;
-        }
-
-        // valida o acesso ao tipo
-        boolean tipoRestrito = (tipo == 1 || tipo == 2 || tipo == 4) && !isAdmin;
-        if (tipoRestrito) {
-            System.out.println("Acesso negado.");
-            return;
-        }
-
-        System.out.print("Codigo: ");
-        int codigo;
-        try {
-            codigo = Integer.parseInt(s.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Codigo invalido.");
-            return;
-        }
-
-        boolean encontrado = false;
-        switch (tipo) {
-            case 1:
-                for (Usuario u : usuarios) {
-                    if (u.getCodigo() == codigo) {
-                        System.out.printf("%n[Usuario] %s (login: %s) - %s%n", u.getNome(), u.getLogin(), u.getNivelAcesso().name());
-                        encontrado = true;
-                        break;
-                    }
-                }
-                break;
-            case 2:
-                for (Fornecedor f : fornecedores) {
-                    if (f.getCodigo() == codigo) {
-                        System.out.printf("%n[Fornecedor] [%d] %s - CNPJ: %s%n",
-                                f.getCodigo(), f.getNome(), f.getCnpj());
-                        encontrado = true;
-                        break;
-                    }
-                }
-                break;
-            case 3:
-                for (Produto p : produtos) {
-                    if (p.getCodigo() == codigo) {
-                        System.out.printf("%n[Produto] [%d] %s - R$ %.2f%n",
-                                p.getCodigo(), p.getDescricao(), p.getPreco());
-                        if (!p.getFornecedores().isEmpty()) {
-                            System.out.print("  Fornecedor(es): ");
-                            for (int i = 0; i < p.getFornecedores().size(); i++) {
-                                System.out.print(p.getFornecedores().get(i).getNome());
-                                if (i < p.getFornecedores().size() - 1) System.out.print(", ");
-                            }
-                            System.out.println();
-                        }
-                        encontrado = true;
-                        break;
-                    }
-                }
-                break;
-            case 4:
-                for (Transportadora t : transportadoras) {
-                    if (t.getCodigo() == codigo) {
-                        System.out.printf("%n[Transportadora] [%d] %s%n",
-                                t.getCodigo(), t.getNome());
-                        encontrado = true;
-                        break;
-                    }
-                }
-                break;
-            case 5:
-                for (Remessa r : remessas) {
-                    if (r.getCodigo() == codigo) {
-                        System.out.printf("%n[Remessa] #%d | Data: %s | Transportadora: %s | Cliente: %s | Pedidos: %d%n",
-                                r.getCodigo(), r.getData(),
-                                r.getTransportadora().getNome(),
-                                r.getCliente().getNome(),
-                                r.getPedidos().size());
-                        encontrado = true;
-                        break;
-                    }
-                }
-                break;
-            default:
-                return;
-        }
-
-        if (!encontrado) {
-            System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
-        }
+    public List<Usuario> getUsuarios() {
+        return usuarios;
     }
 
-    /**
-     * Basicamente é tudo por anyMatch, então retorna qualquer coisa
-     * que contenha o texto do parametro, caso tenha permissao
-     */
-    private void consultarPorTexto(Scanner s) {
-        System.out.print("\nDigite o texto a buscar: ");
-        String texto = s.nextLine().trim().toLowerCase();
+    public List<Fornecedor> getFornecedores() {
+        return fornecedores;
+    }
+    
+    public List<Remessa> getRemessas() {
+        return remessas;
+    }
 
-        if (texto.isEmpty()) {
-            System.out.println("Texto nao pode ser vazio.");
-            return;
-        }
+    public List<Produto> getProdutos(){
+        return produtos;
+    }
 
-        boolean isAdmin = usuarioLogado.temPermissao(Permissao.CADASTRAR);
-        boolean achou = false;
+    public boolean validarLogin() {
+        String[] credencial = menuControle.inputLogin();
+        String login = credencial[0];
+        String senha = credencial[1];
 
-        // pesquisa usuarios, apenas ADMIN
-        if (isAdmin) {
-            List<Usuario> usuariosEncontrados = new ArrayList<>();
-            for (Usuario u : usuarios) {
-                if (u.getNome().toLowerCase().contains(texto) || u.getLogin().toLowerCase().contains(texto)) {
-                    usuariosEncontrados.add(u);
-                }
-            }
-            if (!usuariosEncontrados.isEmpty()) {
-                System.out.println("\n--- Usuarios ---");
-                for (Usuario u : usuariosEncontrados) {
-                    System.out.printf("  [%d] %s (login: %s) - %s%n",
-                            u.getCodigo(), u.getNome(), u.getLogin(), u.getNivelAcesso().name());
-                }
-                achou = true;
-            }
-        }
+        Login l = new Login(dados);
+        usuarioLogado = l.logar(login, senha);
 
-        // pesquisa fornecedores, apenas ADMIN
-        if (isAdmin) {
-            List<Fornecedor> fornecedoresEncontrados = new ArrayList<>();
-            for (Fornecedor f : fornecedores) {
-                if (f.getNome().toLowerCase().contains(texto) || f.getCnpj().toLowerCase().contains(texto)) {
-                    fornecedoresEncontrados.add(f);
-                }
-            }
-            if (!fornecedoresEncontrados.isEmpty()) {
-                System.out.println("\n--- Fornecedores ---");
-                for (Fornecedor f : fornecedoresEncontrados) {
-                    System.out.printf("  [%d] %s - CNPJ: %s%n", f.getCodigo(), f.getNome(), f.getCnpj());
-                }
-                achou = true;
-            }
+        if(usuarioLogado == null) {
+            System.out.println("Senha ou usuario inválido");
+            return false;
         }
+        return true;
+    }
 
-        // pesquisa produtos, todos
-        List<Produto> produtosEncontrados = new ArrayList<>();
-        for (Produto p : produtos) {
-            boolean achouDescricao = p.getDescricao().toLowerCase().contains(texto);
-            boolean achouFornecedor = isAdmin && p.getFornecedores().stream()
-                    .anyMatch(f -> f.getNome().toLowerCase().contains(texto));
-            if (achouDescricao || achouFornecedor) {
-                produtosEncontrados.add(p);
-            }
-        }
-        if (!produtosEncontrados.isEmpty()) {
-            System.out.println("\n--- Produtos ---");
-            for (Produto p : produtosEncontrados) {
-                System.out.printf("  [%d] %s - R$ %.2f%n", p.getCodigo(), p.getDescricao(), p.getPreco());
-            }
-            achou = true;
-        }
+    public void menu(){
+        int opcao;
+        boolean executar = true;
+        while (executar) {
+            Scanner s = new Scanner(System.in);
 
-        // pesquisa transportadoras, apenas ADMIN
-        if (isAdmin) {
-            List<Transportadora> transportadorasEncontradas = new ArrayList<>();
-            for (Transportadora t : transportadoras) {
-                if (t.getNome().toLowerCase().contains(texto)) {
-                    transportadorasEncontradas.add(t);
-                }
-            }
-            if (!transportadorasEncontradas.isEmpty()) {
-                System.out.println("\n--- Transportadoras ---");
-                for (Transportadora t : transportadorasEncontradas) {
-                    System.out.printf("  [%d] %s%n", t.getCodigo(), t.getNome());
-                }
-                achou = true;
-            }
-        }
+            System.out.println("\n=== MENU ADMIN ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n6. Remessas\n0. Sair");
+            System.out.println("Digite o modulo que deseja acessar: ");
+            opcao = s.nextInt();
 
-        // pesquisa remessas, ADMIN consegue ver todas, CLIENTE apenas as suas
-        List<Remessa> remessasEncontradas = new ArrayList<>();
-        for (Remessa r : remessas) {
-            boolean pertenceAoUsuario = isAdmin || r.getCliente().getCodigo() == usuarioLogado.getCodigo();
-            boolean pesquisaTexto = r.getCliente().getNome().toLowerCase().contains(texto) ||
-                    r.getTransportadora().getNome().toLowerCase().contains(texto);
-            if (pertenceAoUsuario && pesquisaTexto) {
-                remessasEncontradas.add(r);
+            switch (opcao) {
+              case 1 -> menuControle.gerenciarProdutos();
+              case 2 -> menuControle.gerenciarFornecedores();
+              case 3 -> menuControle.gerenciarUsuarios();
+              case 4 -> menuControle.gerenciarTransportadoras();
+              case 5 -> menuControle.gerenciarPedidos();
+              case 0 -> {
+                  System.out.println("Saindo do sistema....'");
+                  executar = false;
+              }
+              default -> System.out.println("Opcao inválida!");
             }
-        }
-        if (!remessasEncontradas.isEmpty()) {
-            System.out.println("\n--- Remessas ---");
-            for (Remessa r : remessasEncontradas) {
-                System.out.printf("  Remessa #%d | %s | Transportadora: %s | Cliente: %s%n",
-                        r.getCodigo(), r.getData(),
-                        r.getTransportadora().getNome(),
-                        r.getCliente().getNome());
-            }
-            achou = true;
-        }
 
-        if (!achou) {
-            System.out.println("Nenhum resultado encontrado para \"" + texto + "\".");
         }
     }
 
 
+    // traz os dados do arquivo para o sistema
+    // solicita o login do usuario para permitir as funções 
+    
+    
 
 }
