@@ -39,6 +39,15 @@ public class Pedido {
     public ArrayList<ItemPedido> getItens() {
         return itens;
     }
+
+    public ItemPedido getItemByCodigoProduto(int codigoProduto) {
+        for (ItemPedido i : itens) {
+            if (i.getProduto().getCodigo() == codigoProduto) {
+                return i;
+            }
+        }
+        return null;
+    }
 // SETS ======================================================
     public void setCodigo(int codigo) {
         this.codigo = codigo;

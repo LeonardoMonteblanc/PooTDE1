@@ -64,6 +64,33 @@ public class SistemaControle {
         return produtos;
     }
 
+    public Fornecedor getFornecedorByCodigo(int codigo) {
+        for (Fornecedor f : fornecedores) {
+            if (f.getCodigo() == codigo) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    public Usuario getUsuarioByCodigo(int codigo) {
+        for (Usuario u : usuarios) {
+            if (u.getCodigo() == codigo) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+    public Remessa getRemessaByCodigo(int codigo) {
+        for (Remessa r : remessas) {
+            if (r.getCodigo() == codigo) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public Produto getProdutoByCodigo(int codigo){
         for(Produto p : produtos){
             if(p.getCodigo() == codigo){
@@ -71,6 +98,18 @@ public class SistemaControle {
             }
         }
         return null;
+    }
+
+    public int geraCodigoPedido() {
+        int maior = 0;
+        for (Remessa r : remessas) {
+            for (Pedido p : r.getPedidos()) {
+                if (p.getCodigo() > maior) {
+                    maior = p.getCodigo();
+                }
+            }
+        }
+        return maior + 1;
     }
 
     public Pedido getPedidoByCodigo(int codigo) {

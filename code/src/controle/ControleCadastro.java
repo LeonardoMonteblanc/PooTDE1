@@ -34,10 +34,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Produto produto = sistema.getProdutos().stream()
-                .filter(p -> p.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Produto produto = sistema.getProdutoByCodigo(cod);
 
         if (produto == null) {
             System.out.println("✗ Produto não encontrado!");
@@ -65,10 +62,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Produto produto = sistema.getProdutos().stream()
-                .filter(p -> p.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Produto produto = sistema.getProdutoByCodigo(cod);
 
         if (produto == null) {
             System.out.println("✗ Produto não encontrado!");
@@ -100,10 +94,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Fornecedor fornecedor = sistema.getFornecedores().stream()
-                .filter(f -> f.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Fornecedor fornecedor = sistema.getFornecedorByCodigo(cod);
 
         if (fornecedor == null) {
             System.out.println("✗ Fornecedor não encontrado!");
@@ -131,10 +122,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Fornecedor fornecedor = sistema.getFornecedores().stream()
-                .filter(f -> f.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Fornecedor fornecedor = sistema.getFornecedorByCodigo(cod);
 
         if (fornecedor == null) {
             System.out.println("✗ Fornecedor não encontrado!");
@@ -171,10 +159,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Usuario usuario = sistema.getUsuarios().stream()
-                .filter(u -> u.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Usuario usuario = sistema.getUsuarioByCodigo(cod);
 
         if (usuario == null) {
             System.out.println("✗ Usuário não encontrado!");
@@ -214,10 +199,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Usuario usuario = sistema.getUsuarios().stream()
-                .filter(u -> u.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Usuario usuario = sistema.getUsuarioByCodigo(cod);
 
         if (usuario == null) {
             System.out.println("✗ Usuário não encontrado!");
@@ -247,10 +229,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Transportadora transportadora = sistema.getTransportadora().stream()
-                .filter(t -> t.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Transportadora transportadora = sistema.getTransportadoraByCodigo(cod);
 
         if (transportadora == null) {
             System.out.println("✗ Transportadora não encontrada!");
@@ -272,10 +251,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Transportadora transportadora = sistema.getTransportadora().stream()
-                .filter(t -> t.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Transportadora transportadora = sistema.getTransportadoraByCodigo(cod);
 
         if (transportadora == null) {
             System.out.println("✗ Transportadora não encontrada!");
@@ -293,10 +269,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Remessa remessa = sistema.getRemessas().stream()
-                .filter(r -> r.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Remessa remessa = sistema.getRemessaByCodigo(cod);
 
         if (remessa == null) {
             System.out.println("✗ Remessa não encontrada!");
@@ -307,10 +280,7 @@ public class ControleCadastro {
         String transpStr = scanner.nextLine();
         if (!transpStr.isEmpty()) {
             int codTransp = Integer.parseInt(transpStr);
-            Transportadora transp = sistema.getTransportadora().stream()
-                    .filter(t -> t.getCodigo() == codTransp)
-                    .findFirst()
-                    .orElse(null);
+            Transportadora transp = sistema.getTransportadoraByCodigo(codTransp);
             if (transp != null) {
                 remessa.setTransportadora(transp);
             }
@@ -325,10 +295,7 @@ public class ControleCadastro {
         int cod = scanner.nextInt();
         scanner.nextLine();
 
-        Remessa remessa = sistema.getRemessas().stream()
-                .filter(r -> r.getCodigo() == cod)
-                .findFirst()
-                .orElse(null);
+        Remessa remessa = sistema.getRemessaByCodigo(cod);
 
         if (remessa == null) {
             System.out.println("✗ Remessa não encontrada!");
@@ -372,10 +339,7 @@ public class ControleCadastro {
                     System.out.println("Código do produto: ");
                     int codProd = scanner.nextInt();
                     scanner.nextLine();
-                    Produto produto = sistema.getProdutos().stream()
-                            .filter(p -> p.getCodigo() == codProd)
-                            .findFirst()
-                            .orElse(null);
+                    Produto produto = sistema.getProdutoByCodigo(codProd);
                     if (produto == null) {
                         System.out.println("✗ Produto não encontrado!");
                         break;
@@ -390,10 +354,7 @@ public class ControleCadastro {
                     System.out.println("Código do produto a remover: ");
                     int codRemover = scanner.nextInt();
                     scanner.nextLine();
-                    Produto prodRemover = sistema.getProdutos().stream()
-                            .filter(p -> p.getCodigo() == codRemover)
-                            .findFirst()
-                            .orElse(null);
+                    Produto prodRemover = sistema.getProdutoByCodigo(codRemover);
                     if (prodRemover == null) {
                         System.out.println("✗ Produto não encontrado!");
                         break;
@@ -405,10 +366,7 @@ public class ControleCadastro {
                     System.out.println("Código do produto a alterar quantidade: ");
                     int codAlterar = scanner.nextInt();
                     scanner.nextLine();
-                    ItemPedido itemAlterar = pedido.getItens().stream()
-                            .filter(i -> i.getProduto().getCodigo() == codAlterar)
-                            .findFirst()
-                            .orElse(null);
+                    ItemPedido itemAlterar = pedido.getItemByCodigoProduto(codAlterar);
                     if (itemAlterar == null) {
                         System.out.println("✗ Item não encontrado no pedido!");
                         break;
@@ -456,9 +414,7 @@ public class ControleCadastro {
         System.out.println("=== Fazer Pedido ===");
 
         Listagem listagem = new Listagem(sistema);
-        System.out.println("Código do pedido: ");
-        int codPedido = scanner.nextInt();
-        Pedido pedido = new Pedido(codPedido);
+        Pedido pedido = new Pedido(sistema.geraCodigoPedido());
         boolean addProduto = true;
 
         while (addProduto) {
@@ -508,7 +464,7 @@ public class ControleCadastro {
         remessa.adicionarPedido(pedido);
         sistema.getRemessas().add(remessa);
 
-        System.out.println("Pedido incluido com sucesso!");
+        System.out.println("Pedido #" + pedido.getCodigo() + " incluido com sucesso!");
     }
 
     // ========== CADASTRO DE REMESSAS COM PEDIDOS ==========
@@ -522,10 +478,7 @@ public class ControleCadastro {
         int codTransp = scanner.nextInt();
         scanner.nextLine();
 
-        Transportadora transportadora = sistema.getTransportadora().stream()
-                .filter(t -> t.getCodigo() == codTransp)
-                .findFirst()
-                .orElse(null);
+        Transportadora transportadora = sistema.getTransportadoraByCodigo(codTransp);
 
         if (transportadora == null) {
             System.out.println("✗ Transportadora não encontrada!");
@@ -536,10 +489,7 @@ public class ControleCadastro {
         int codCliente = scanner.nextInt();
         scanner.nextLine();
 
-        Usuario cliente = sistema.getUsuarios().stream()
-                .filter(u -> u.getCodigo() == codCliente)
-                .findFirst()
-                .orElse(null);
+        Usuario cliente = sistema.getUsuarioByCodigo(codCliente);
 
         if (cliente == null) {
             System.out.println("✗ Cliente não encontrado!");
@@ -548,10 +498,7 @@ public class ControleCadastro {
 
         // Criar remessa
         Remessa novaRemessa = new Remessa(codRemessa, transportadora, cliente);
-        System.out.println("Código do pedido: ");
-        int codPedido = scanner.nextInt();
-        scanner.nextLine();
-        Pedido novoPedido = new Pedido(codPedido);
+        Pedido novoPedido = new Pedido(sistema.geraCodigoPedido());
 
         // Adicionar itens ao pedido
         boolean adicionarMais = true;
@@ -567,10 +514,7 @@ public class ControleCadastro {
                 break;
             }
 
-            Produto produto = sistema.getProdutos().stream()
-                    .filter(p -> p.getCodigo() == codProduto)
-                    .findFirst()
-                    .orElse(null);
+            Produto produto = sistema.getProdutoByCodigo(codProduto);
 
             if (produto == null) {
                 System.out.println("✗ Produto não encontrado!");
