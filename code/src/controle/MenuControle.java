@@ -8,12 +8,14 @@ public class MenuControle {
     private Listagem sisListagem;
     private Scanner scanner;
     private Consulta sisConsulta;
+    private ControleCadastro sisControleCadastro;
     // receber inputs do usuario e manipular o menu
     public MenuControle(SistemaControle sis, Listagem lis, Consulta cos, Scanner scan) {
         this.sistema = sis;
         this.sisListagem = lis;
         this.sisConsulta = cos;
         this.scanner = scan;
+        this.sisControleCadastro = new ControleCadastro(sis, scan);
     }
 
     public String[] inputLogin() {
@@ -68,9 +70,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarProdutoPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); 
                     String texto = scanner.nextLine();
                     sisConsulta.consultarProdutosPorTexto(texto);
                 } else {
@@ -81,17 +86,17 @@ public class MenuControle {
                 cadastrarProduto();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarProduto();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirProduto();
                 break;
             default:
                 break;
         }
     }
 
-        public void gerenciarFornecedores() {
+    public void gerenciarFornecedores() {
         int opcao = validarAcao();
 
         switch (opcao) {
@@ -102,9 +107,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarFornecedorPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarFornecedoresPorTexto(texto);
                 } else {
@@ -115,15 +123,16 @@ public class MenuControle {
                 cadastrarFornecedor();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarFornecedor();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirFornecedor();
                 break;
             default:
                 break;
         }
     }
+
     public void gerenciarUsuarios() {
         int opcao = validarAcao();
 
@@ -135,9 +144,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarUsuarioPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarUsuariosPorTexto(texto);
                 } else {
@@ -148,10 +160,10 @@ public class MenuControle {
                 cadastrarUsuario();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarUsuario();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirUsuario();
                 break;
             default:
                 break;
@@ -169,9 +181,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarTransportadoraPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarTransportadorasPorTexto(texto);
                 } else {
@@ -182,10 +197,10 @@ public class MenuControle {
                 cadastrarTransportadora();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarTransportadora();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirTransportadora();
                 break;
             default:
                 break;
@@ -263,9 +278,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarRemessaPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarRemessasPorTexto(texto);
                 } else {
@@ -273,13 +291,13 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                sisControleCadastro.cadastrarRemessaComPedido();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarRemessa();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirRemessa();
                 break;
             default:
                 break;
