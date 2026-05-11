@@ -39,6 +39,15 @@ public class SistemaControle {
         return transportadoras;
     }
 
+    public Transportadora getTransportadoraByCodigo(int codigo){
+        for(Transportadora t : transportadoras){
+            if(t.getCodigo() == codigo){
+                return t;
+            }
+        }
+        return null;
+    }
+
     public List<Usuario> getUsuarios() {
         return usuarios;
     }
@@ -53,6 +62,15 @@ public class SistemaControle {
 
     public List<Produto> getProdutos(){
         return produtos;
+    }
+
+    public Produto getProdutoByCodigo(int codigo){
+        for(Produto p : produtos){
+            if(p.getCodigo() == codigo){
+                return p;
+            }
+        }
+        return null;
     }
 
     public boolean validarLogin() {
@@ -76,7 +94,8 @@ public class SistemaControle {
 
         while (executar) {
 
-            System.out.println("\n=== MENU ADMIN ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n0. Sair");
+            String tituloMenu = usuarioLogado.getNivelAcesso() == modelo.NivelAcesso.ADMIN ? "MENU ADMIN" : "MENU CLIENTE";
+            System.out.println("\n=== " + tituloMenu + " ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n0. Sair");
             System.out.println("Digite o modulo que deseja acessar: ");
             opcao = scanner.nextInt();
 

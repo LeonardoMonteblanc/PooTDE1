@@ -27,7 +27,7 @@ public class MenuControle {
         return new String[] {login, senha};
     }
 
-    public int validarAcao() {
+    public int validarAcao(String menu) {
         int opcao;
         boolean admin = sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN;
 
@@ -35,8 +35,11 @@ public class MenuControle {
         System.out.println("1. Listar");
         System.out.println("2. Consultar");
 
-        if(admin) {
+        if(menu == "pedidos" || admin) {
             System.out.println("3. Cadastrar");
+        }
+
+        if(admin) {
             System.out.println("4. Alterar");
             System.out.println("5. Excluir");
         }
@@ -48,17 +51,17 @@ public class MenuControle {
             return opcao;
         } 
 
-        if(!admin && (opcao == 0 || opcao == 1 || opcao == 2)) {
+        if(!admin && (opcao == 0 || opcao == 1 || opcao == 2 || (opcao == 3 && menu == "pedidos"))) {
             return opcao;
         }
         
         System.out.println("Opcao indisponivel para seu nivel de acesso");
-        return validarAcao();
+        return validarAcao(menu);
 
         }
 
     public void gerenciarProdutos() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("produtos");
 
         switch (opcao) {
             case 1:
@@ -92,7 +95,7 @@ public class MenuControle {
     }
 
         public void gerenciarFornecedores() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("fornecedores");
 
         switch (opcao) {
             case 1:
@@ -125,7 +128,7 @@ public class MenuControle {
         }
     }
     public void gerenciarUsuarios() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("usuarios");
 
         switch (opcao) {
             case 1:
@@ -159,7 +162,7 @@ public class MenuControle {
     }
     
     public void gerenciarTransportadoras() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("transportadoras");
 
         switch (opcao) {
             case 1:
@@ -240,6 +243,63 @@ public class MenuControle {
         System.out.println("✓ Usuário cadastrado!");
     }
 
+    private void fazerPedido() {
+        System.out.println("=== Fazer Pedido ===");
+
+        Pedido pedido = new Pedido();
+        boolean addProduto = true;
+
+        while (addProduto) {
+            sisListagem.listarProdutos();
+            System.out.println("Digite o código do produto (ou 0 para finalizar): ");
+            int codigoProduto = scanner.nextInt();
+
+            if (codigoProduto == 0) {
+                addProduto = false;
+                continue;
+            }
+
+            Produto produtoSelecionado = sistema.getProdutoByCodigo(codigoProduto);
+            if (produtoSelecionado == null) {
+                System.out.println("Produto não encontrado");
+                continue;
+            }
+
+            System.out.println("Produto: " + produtoSelecionado.getDescricao() + "= R$ " + String.format("%.2f", produtoSelecionado.getPreco()));
+            System.out.println("Digite a quantidade: ");
+            int quantidade = scanner.nextInt();
+
+            pedido.adicionarItem(produtoSelecionado, quantidade);
+            System.out.println("Item adicionado");
+        }
+
+        System.out.println("=== Resumo do Pedido ===");
+        sisListagem.imprimirItensPedido(pedido.getItens());
+
+        double total = 0;
+        for (ItemPedido item : pedido.getItens()) {
+            total += item.getQuantidade() * item.getProduto().getPreco();
+        }
+        System.out.printf("Total: R$ %.2f%n", total);
+
+        sisListagem.listarTransportadoras();
+        System.out.println("Digite o código da transportadora (codigo): ");
+        int codigoTransp = scanner.nextInt();
+
+        Transportadora transportadora = sistema.getTransportadoraByCodigo(codigoTransp);
+        if (transportadora == null) {
+            System.out.println("transportadora nao encontrada");
+            return;
+        }
+
+        // Por enquanto cria um nova remessa, ver depois como vai ser
+        Remessa remessa = new Remessa(sistema.getRemessas().size() + 1, transportadora, sistema.getUsuarioLogado());
+        remessa.adicionarPedido(pedido);
+        sistema.getRemessas().add(remessa);
+
+        System.out.println("Pedido incluido com sucesso!");
+    }
+
     private void cadastrarTransportadora() {
         System.out.println("=== Cadastrar Transportadora ===");
         System.out.println("Código: ");
@@ -253,7 +313,7 @@ public class MenuControle {
     }
 
     public void gerenciarPedidos() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("pedidos");
 
         switch (opcao) {
             case 1:
@@ -273,7 +333,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                fazerPedido();
                 break;
             case 4:
                 System.out.println("alterar");
