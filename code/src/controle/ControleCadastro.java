@@ -24,6 +24,25 @@ public class ControleCadastro {
         String precoStr = scanner.nextLine().replace(",", ".");
         double preco = Double.parseDouble(precoStr);
         Produto novoProd = new Produto(cod, desc, preco);
+
+        Listagem listagem = new Listagem(sistema);
+        listagem.listarFornecedores();
+
+        System.out.println("Digite o codigo do fornecedor: ");
+        int codFornecedor = scanner.nextInt();
+        scanner.nextLine();
+
+        // Vincula só um fornecedor por produto
+        if (codFornecedor != 0) {
+            Fornecedor fornecedor = sistema.getFornecedorByCodigo(codFornecedor);
+            if (fornecedor == null) {
+                System.out.println("Fornecedor não encontrado");
+            } else {
+                novoProd.adicionarFornecedor(fornecedor);
+                System.out.println("Fornecedor vinculado");
+            }
+        }
+
         sistema.getProdutos().add(novoProd);
         System.out.println("✓ Produto cadastrado!");
     }
