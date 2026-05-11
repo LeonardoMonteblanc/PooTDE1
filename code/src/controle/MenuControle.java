@@ -86,7 +86,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarProduto();
+                sisControleCadastro.cadastrarProduto();
                 break;
             case 4:
                 sisControleCadastro.alterarProduto();
@@ -123,7 +123,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarFornecedor();
+                sisControleCadastro.cadastrarFornecedor();
                 break;
             case 4:
                 sisControleCadastro.alterarFornecedor();
@@ -160,7 +160,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarUsuario();
+                sisControleCadastro.cadastrarUsuario();
                 break;
             case 4:
                 sisControleCadastro.alterarUsuario();
@@ -197,7 +197,7 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarTransportadora();
+                sisControleCadastro.cadastrarTransportadora();
                 break;
             case 4:
                 sisControleCadastro.alterarTransportadora();
@@ -208,123 +208,6 @@ public class MenuControle {
             default:
                 break;
         }
-    }
-
-    private void cadastrarProduto() {
-        System.out.println("=== Cadastrar Produto ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Descrição: ");
-        String desc = scanner.nextLine();
-        System.out.println("Preço: ");
-        String precoStr = scanner.nextLine().replace(",", ".");
-        double preco = Double.parseDouble(precoStr);
-        Produto novoProd = new Produto(cod, desc, preco);
-        sistema.getProdutos().add(novoProd);
-        System.out.println("✓ Produto cadastrado!");
-    }
-
-    private void cadastrarFornecedor() {
-        System.out.println("=== Cadastrar Fornecedor ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Nome: ");
-        String nome = scanner.nextLine();
-        System.out.println("CNPJ: ");
-        String cnpj = scanner.nextLine();
-        Fornecedor novoFor = new Fornecedor(cod, nome, cnpj);
-        sistema.getFornecedores().add(novoFor);
-        System.out.println("✓ Fornecedor cadastrado!");
-    }
-
-    private void cadastrarUsuario() {
-        System.out.println("=== Cadastrar Usuário ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Nome: ");
-        String nome = scanner.nextLine();
-        System.out.println("Login: ");
-        String login = scanner.nextLine();
-        System.out.println("Senha: ");
-        String senha = scanner.nextLine();
-        System.out.println("Nível de acesso (ADMIN/CLIENTE): ");
-        String nivel = scanner.nextLine().toUpperCase();
-        NivelAcesso nivelAcesso = NivelAcesso.valueOf(nivel);
-        Usuario novoUser = new Usuario(cod, nome, login, senha, nivelAcesso);
-        sistema.getUsuarios().add(novoUser);
-        System.out.println("✓ Usuário cadastrado!");
-    }
-
-    private void fazerPedido() {
-        System.out.println("=== Fazer Pedido ===");
-
-        Pedido pedido = new Pedido();
-        boolean addProduto = true;
-
-        while (addProduto) {
-            sisListagem.listarProdutos();
-            System.out.println("Digite o código do produto (ou 0 para finalizar): ");
-            int codigoProduto = scanner.nextInt();
-
-            if (codigoProduto == 0) {
-                addProduto = false;
-                continue;
-            }
-
-            Produto produtoSelecionado = sistema.getProdutoByCodigo(codigoProduto);
-            if (produtoSelecionado == null) {
-                System.out.println("Produto não encontrado");
-                continue;
-            }
-
-            System.out.println("Produto: " + produtoSelecionado.getDescricao() + "= R$ " + String.format("%.2f", produtoSelecionado.getPreco()));
-            System.out.println("Digite a quantidade: ");
-            int quantidade = scanner.nextInt();
-
-            pedido.adicionarItem(produtoSelecionado, quantidade);
-            System.out.println("Item adicionado");
-        }
-
-        System.out.println("=== Resumo do Pedido ===");
-        sisListagem.imprimirItensPedido(pedido.getItens());
-
-        double total = 0;
-        for (ItemPedido item : pedido.getItens()) {
-            total += item.getQuantidade() * item.getProduto().getPreco();
-        }
-        System.out.printf("Total: R$ %.2f%n", total);
-
-        sisListagem.listarTransportadoras();
-        System.out.println("Digite o código da transportadora (codigo): ");
-        int codigoTransp = scanner.nextInt();
-
-        Transportadora transportadora = sistema.getTransportadoraByCodigo(codigoTransp);
-        if (transportadora == null) {
-            System.out.println("transportadora nao encontrada");
-            return;
-        }
-
-        // Por enquanto cria um nova remessa, ver depois como vai ser
-        Remessa remessa = new Remessa(sistema.getRemessas().size() + 1, transportadora, sistema.getUsuarioLogado());
-        remessa.adicionarPedido(pedido);
-        sistema.getRemessas().add(remessa);
-
-        System.out.println("Pedido incluido com sucesso!");
-    }
-
-    private void cadastrarTransportadora() {
-        System.out.println("=== Cadastrar Transportadora ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Nome: ");
-        String nome = scanner.nextLine();
-        Transportadora novaTransp = new Transportadora(cod, nome);
-        sistema.getTransportadora().add(novaTransp);
-        System.out.println("✓ Transportadora cadastrada!");
     }
 
     public void gerenciarPedidos() {
@@ -348,13 +231,13 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                fazerPedido();
+                sisControleCadastro.cadastrarPedido();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarPedido();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirPedido();
                 break;
             default:
                 break;

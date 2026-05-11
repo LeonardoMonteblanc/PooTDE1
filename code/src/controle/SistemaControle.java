@@ -73,6 +73,26 @@ public class SistemaControle {
         return null;
     }
 
+    public Pedido getPedidoByCodigo(int codigo) {
+        for (Remessa r : remessas) {
+            for (Pedido p : r.getPedidos()) {
+                if (p.getCodigo() == codigo) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Remessa getRemessaByPedido(Pedido pedido) {
+        for (Remessa r : remessas) {
+            if (r.getPedidos().contains(pedido)) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     public boolean validarLogin() {
         String[] credencial = menuControle.inputLogin();
         String login = credencial[0];
