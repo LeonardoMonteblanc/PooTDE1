@@ -14,10 +14,11 @@
 - [x] Implementar cadastro por input
 - [x] Implementar pesquisa por código ou texto
 - [x] Ajustar permissões de acesso
-- [ ] Implementar exclusão por input
-- [ ] Implementar alteração por input
-- [ ] Implementar criação de remessa/pedido
+- [x] Implementar exclusão por input
+- [x] Implementar alteração por input
+- [x] Implementar criação de remessa/pedido
 
+- [x] BUSCA POR TEXTO NÃO FUNCIONA
 ---
 ### Login de teste
 
@@ -34,17 +35,24 @@ senha: 123
 ```
 src/
 ├── controle/
+│   ├── Consulta.java
+│   ├── ControleCadastro.java
 │   ├── Dados.java
+│   ├── Listagem.java
+│   ├── MenuControle.java
 │   └── SistemaControle.java
 └── modelo/
-    ├── Pessoa.java (abstrata)
-    ├── Usuario.java
     ├── Fornecedor.java
-    ├── Transportadora.java
-    ├── Produto.java
     ├── ItemPedido.java
+    ├── Login.java
+    ├── NivelAcesso.java
     ├── Pedido.java
-    └── Remessa.java
+    ├── Permissao.java
+    ├── Pessoa.java (abstrata)
+    ├── Produto.java
+    ├── Remessa.java
+    ├── Transportadora.java
+    └── Usuario.java
 ```
 ```
 Usuário seleciona produto
@@ -59,6 +67,9 @@ Usuário seleciona produto
 #### modelo
 - `Pessoa` (base de usuário, fornecedor, transportadora)
 - `Usuario` (nome, login, senha, nível de acesso)
+- `Login` (autentica usuários e valida credenciais na base)
+- `NivelAcesso` (enum de papéis de usuários e suas permissões associadas)
+- `Permissao` (enum para regras de controle como consultar, cadastrar, excluir)
 - `Fornecedor`
 - `Transportadora`
 - `Produto` (código, descrição, preço, fornecedores)
@@ -70,6 +81,7 @@ Usuário seleciona produto
 - `Dados`: carga inicial de dados em memória
 - `SistemaControle`: orquestra login, sessão e menus
 - `MenuControle`: ações por módulo (listar, consultar, cadastrar)
+- `ControleCadastro`: inputs de alteração, exclusão e rotinas complexas de persistência
 - `Listagem`: impressão formatada das entidades
 - `Consulta`: busca por código e texto
 

@@ -8,12 +8,14 @@ public class MenuControle {
     private Listagem sisListagem;
     private Scanner scanner;
     private Consulta sisConsulta;
+    private ControleCadastro sisControleCadastro;
     // receber inputs do usuario e manipular o menu
     public MenuControle(SistemaControle sis, Listagem lis, Consulta cos, Scanner scan) {
         this.sistema = sis;
         this.sisListagem = lis;
         this.sisConsulta = cos;
         this.scanner = scan;
+        this.sisControleCadastro = new ControleCadastro(sis, scan);
     }
 
     public String[] inputLogin() {
@@ -27,7 +29,7 @@ public class MenuControle {
         return new String[] {login, senha};
     }
 
-    public int validarAcao() {
+    public int validarAcao(String menu) {
         int opcao;
         boolean admin = sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN;
 
@@ -35,8 +37,11 @@ public class MenuControle {
         System.out.println("1. Listar");
         System.out.println("2. Consultar");
 
-        if(admin) {
+        if(menu == "pedidos" || admin) {
             System.out.println("3. Cadastrar");
+        }
+
+        if(admin) {
             System.out.println("4. Alterar");
             System.out.println("5. Excluir");
         }
@@ -48,17 +53,17 @@ public class MenuControle {
             return opcao;
         } 
 
-        if(!admin && (opcao == 0 || opcao == 1 || opcao == 2)) {
+        if(!admin && (opcao == 0 || opcao == 1 || opcao == 2 || (opcao == 3 && menu == "pedidos"))) {
             return opcao;
         }
         
         System.out.println("Opcao indisponivel para seu nivel de acesso");
-        return validarAcao();
+        return validarAcao(menu);
 
         }
 
     public void gerenciarProdutos() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("produtos");
 
         switch (opcao) {
             case 1:
@@ -68,9 +73,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarProdutoPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); 
                     String texto = scanner.nextLine();
                     sisConsulta.consultarProdutosPorTexto(texto);
                 } else {
@@ -78,21 +86,21 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarProduto();
+                sisControleCadastro.cadastrarProduto();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarProduto();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirProduto();
                 break;
             default:
                 break;
         }
     }
 
-        public void gerenciarFornecedores() {
-        int opcao = validarAcao();
+    public void gerenciarFornecedores() {
+        int opcao = validarAcao("fornecedores");
 
         switch (opcao) {
             case 1:
@@ -102,9 +110,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarFornecedorPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarFornecedoresPorTexto(texto);
                 } else {
@@ -112,20 +123,21 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarFornecedor();
+                sisControleCadastro.cadastrarFornecedor();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarFornecedor();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirFornecedor();
                 break;
             default:
                 break;
         }
     }
+
     public void gerenciarUsuarios() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("usuarios");
 
         switch (opcao) {
             case 1:
@@ -135,9 +147,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarUsuarioPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarUsuariosPorTexto(texto);
                 } else {
@@ -145,13 +160,13 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarUsuario();
+                sisControleCadastro.cadastrarUsuario();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarUsuario();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirUsuario();
                 break;
             default:
                 break;
@@ -159,7 +174,7 @@ public class MenuControle {
     }
     
     public void gerenciarTransportadoras() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("transportadoras");
 
         switch (opcao) {
             case 1:
@@ -169,9 +184,12 @@ public class MenuControle {
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
                 opcao = scanner.nextInt();
                 if(opcao == 1) {
+                    System.out.println("Digite o código:");
                     int codigo = scanner.nextInt();
                     sisConsulta.consultarTransportadoraPorCodigo(codigo);
                 } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
                     String texto = scanner.nextLine();
                     sisConsulta.consultarTransportadorasPorTexto(texto);
                 } else {
@@ -179,81 +197,21 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                cadastrarTransportadora();
+                sisControleCadastro.cadastrarTransportadora();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarTransportadora();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirTransportadora();
                 break;
             default:
                 break;
         }
     }
 
-    private void cadastrarProduto() {
-        System.out.println("=== Cadastrar Produto ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Descrição: ");
-        String desc = scanner.nextLine();
-        System.out.println("Preço: ");
-        String precoStr = scanner.nextLine().replace(",", ".");
-        double preco = Double.parseDouble(precoStr);
-        Produto novoProd = new Produto(cod, desc, preco);
-        sistema.getProdutos().add(novoProd);
-        System.out.println("✓ Produto cadastrado!");
-    }
-
-    private void cadastrarFornecedor() {
-        System.out.println("=== Cadastrar Fornecedor ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Nome: ");
-        String nome = scanner.nextLine();
-        System.out.println("CNPJ: ");
-        String cnpj = scanner.nextLine();
-        Fornecedor novoFor = new Fornecedor(cod, nome, cnpj);
-        sistema.getFornecedores().add(novoFor);
-        System.out.println("✓ Fornecedor cadastrado!");
-    }
-
-    private void cadastrarUsuario() {
-        System.out.println("=== Cadastrar Usuário ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Nome: ");
-        String nome = scanner.nextLine();
-        System.out.println("Login: ");
-        String login = scanner.nextLine();
-        System.out.println("Senha: ");
-        String senha = scanner.nextLine();
-        System.out.println("Nível de acesso (ADMIN/CLIENTE): ");
-        String nivel = scanner.nextLine().toUpperCase();
-        NivelAcesso nivelAcesso = NivelAcesso.valueOf(nivel);
-        Usuario novoUser = new Usuario(cod, nome, login, senha, nivelAcesso);
-        sistema.getUsuarios().add(novoUser);
-        System.out.println("✓ Usuário cadastrado!");
-    }
-
-    private void cadastrarTransportadora() {
-        System.out.println("=== Cadastrar Transportadora ===");
-        System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
-        System.out.println("Nome: ");
-        String nome = scanner.nextLine();
-        Transportadora novaTransp = new Transportadora(cod, nome);
-        sistema.getTransportadora().add(novaTransp);
-        System.out.println("✓ Transportadora cadastrada!");
-    }
-
     public void gerenciarPedidos() {
-        int opcao = validarAcao();
+        int opcao = validarAcao("pedidos");
 
         switch (opcao) {
             case 1:
@@ -273,13 +231,50 @@ public class MenuControle {
                 }
                 break;
             case 3:
-                System.out.println("cadastrar");
+                sisControleCadastro.cadastrarPedido();
                 break;
             case 4:
-                System.out.println("alterar");
+                sisControleCadastro.alterarPedido();
                 break;
             case 5:
-                System.out.println("excluir");
+                sisControleCadastro.excluirPedido();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void gerenciarRemessas() {
+        int opcao = validarAcao("remessas");
+
+        switch (opcao) {
+            case 1:
+                sisListagem.listarRemessas();
+                break;
+            case 2:
+                System.out.println("1. Consulta por código:\n2. Consulta por texto");
+                opcao = scanner.nextInt();
+                if(opcao == 1) {
+                    System.out.println("Digite o código:");
+                    int codigo = scanner.nextInt();
+                    sisConsulta.consultarRemessaPorCodigo(codigo);
+                } else if(opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    scanner.nextLine(); // limpar buffer
+                    String texto = scanner.nextLine();
+                    sisConsulta.consultarRemessasPorTexto(texto);
+                } else {
+                    System.out.println("Opcao inválida!");
+                }
+                break;
+            case 3:
+                sisControleCadastro.cadastrarRemessaComPedido();
+                break;
+            case 4:
+                sisControleCadastro.alterarRemessa();
+                break;
+            case 5:
+                sisControleCadastro.excluirRemessa();
                 break;
             default:
                 break;

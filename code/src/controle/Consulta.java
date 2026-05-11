@@ -81,6 +81,7 @@ public class Consulta {
 
 
     public boolean consultarUsuariosPorTexto(String texto) {
+        texto = texto.toLowerCase();
         List<Usuario> usuarios = sistema.getUsuarios();
         List<Usuario> usuariosEncontrados = new ArrayList<>();
         for (Usuario u : usuarios) {
@@ -100,6 +101,7 @@ public class Consulta {
     }
 
     public boolean consultarFornecedoresPorTexto(String texto) {
+        texto = texto.toLowerCase();
         List<Fornecedor> fornecedores = sistema.getFornecedores();
         List<Fornecedor> fornecedoresEncontrados = new ArrayList<>();
         for (Fornecedor f : fornecedores) {
@@ -118,6 +120,7 @@ public class Consulta {
     }
 
     public boolean consultarProdutosPorTexto(String texto) {
+        texto = texto.toLowerCase();
         List<Produto> produtos = sistema.getProdutos();
         List<Produto> produtosEncontrados = new ArrayList<>();
         for (Produto p : produtos) {
@@ -136,6 +139,7 @@ public class Consulta {
     }
 
     public boolean consultarTransportadorasPorTexto(String texto) {
+        texto = texto.toLowerCase();
         List<Transportadora> transportadoras = sistema.getTransportadora();
         List<Transportadora> transportadorasEncontradas = new ArrayList<>();
         for (Transportadora t : transportadoras) {
@@ -154,6 +158,7 @@ public class Consulta {
     }
 
     public boolean consultarRemessasPorTexto(String texto) {
+        texto = texto.toLowerCase();
         List<Remessa>remessas = sistema.getRemessas();
         List<Remessa> remessasEncontradas = new ArrayList<>();
         for (Remessa r : remessas) {

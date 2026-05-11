@@ -3,11 +3,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Pedido {
+    private int codigo;
     private ArrayList<ItemPedido> itens = new ArrayList<>();
     
-    // public Pedido(){
-
-    // }
+    public Pedido(int codigo) {
+        this.codigo = codigo;
+    }
 
     public void adicionarItem(Produto p, int qtd) {
         for(ItemPedido i : itens ) {
@@ -31,16 +32,33 @@ public class Pedido {
 
 // GETS ======================================================
 
+    public int getCodigo() {
+        return codigo;
+    }
+
     public ArrayList<ItemPedido> getItens() {
         return itens;
     }
+
+    public ItemPedido getItemByCodigoProduto(int codigoProduto) {
+        for (ItemPedido i : itens) {
+            if (i.getProduto().getCodigo() == codigoProduto) {
+                return i;
+            }
+        }
+        return null;
+    }
 // SETS ======================================================
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
+    }
+
     public void setItens(ArrayList<ItemPedido> itens) {
         this.itens = itens;
     }
     
     @Override 
     public String toString() {
-        return String.format("[Pedido]: itens: %s",itens);
+        return String.format("[Pedido #%d]: itens: %s", codigo, itens);
     }
 }

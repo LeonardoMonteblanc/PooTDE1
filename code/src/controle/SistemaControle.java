@@ -39,6 +39,15 @@ public class SistemaControle {
         return transportadoras;
     }
 
+    public Transportadora getTransportadoraByCodigo(int codigo){
+        for(Transportadora t : transportadoras){
+            if(t.getCodigo() == codigo){
+                return t;
+            }
+        }
+        return null;
+    }
+
     public List<Usuario> getUsuarios() {
         return usuarios;
     }
@@ -53,6 +62,74 @@ public class SistemaControle {
 
     public List<Produto> getProdutos(){
         return produtos;
+    }
+
+    public Fornecedor getFornecedorByCodigo(int codigo) {
+        for (Fornecedor f : fornecedores) {
+            if (f.getCodigo() == codigo) {
+                return f;
+            }
+        }
+        return null;
+    }
+
+    public Usuario getUsuarioByCodigo(int codigo) {
+        for (Usuario u : usuarios) {
+            if (u.getCodigo() == codigo) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+    public Remessa getRemessaByCodigo(int codigo) {
+        for (Remessa r : remessas) {
+            if (r.getCodigo() == codigo) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    public Produto getProdutoByCodigo(int codigo){
+        for(Produto p : produtos){
+            if(p.getCodigo() == codigo){
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public int geraCodigoPedido() {
+        int maior = 0;
+        for (Remessa r : remessas) {
+            for (Pedido p : r.getPedidos()) {
+                if (p.getCodigo() > maior) {
+                    maior = p.getCodigo();
+                }
+            }
+        }
+        return maior + 1;
+    }
+
+    public Pedido getPedidoByCodigo(int codigo) {
+        for (Remessa r : remessas) {
+            for (Pedido p : r.getPedidos()) {
+                if (p.getCodigo() == codigo) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+    public Remessa getRemessaByPedido(Pedido pedido) {
+        for (Remessa r : remessas) {
+            if (r.getPedidos().contains(pedido)) {
+                return r;
+            }
+        }
+        return null;
     }
 
     public boolean validarLogin() {
@@ -76,7 +153,8 @@ public class SistemaControle {
 
         while (executar) {
 
-            System.out.println("\n=== MENU ADMIN ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n0. Sair");
+            String tituloMenu = usuarioLogado.getNivelAcesso() == modelo.NivelAcesso.ADMIN ? "MENU ADMIN" : "MENU CLIENTE";
+            System.out.println("\n=== " + tituloMenu + " ===\n1. Produtos\n2.Fornecedores\n3. Usuarios\n4. Transportadoras\n5.Pedidos\n6. Remessas\n0. Sair");
             System.out.println("Digite o modulo que deseja acessar: ");
             opcao = scanner.nextInt();
 
@@ -86,6 +164,7 @@ public class SistemaControle {
               case 3 -> menuControle.gerenciarUsuarios();
               case 4 -> menuControle.gerenciarTransportadoras();
               case 5 -> menuControle.gerenciarPedidos();
+              case 6 -> menuControle.gerenciarRemessas();
               case 0 -> {
                   System.out.println("Saindo do sistema....");
                   executar = false;
