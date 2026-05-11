@@ -89,6 +89,22 @@ public class Listagem {
         }
     }
 
+    public void listarPedidos() {
+        List<Remessa> remessas = sistema.getRemessas();
+        int totalPedidos = 0;
+        for (Remessa r : remessas) {
+            totalPedidos += r.getPedidos().size();
+        }
+        System.out.println("\n========== PEDIDOS (" + totalPedidos + ") ==========");
+        for (Remessa r : remessas) {
+            for (Pedido ped : r.getPedidos()) {
+                System.out.printf("%n>> PEDIDO #%d  (Remessa #%d | Cliente: %s) <<%n",
+                        ped.getCodigo(), r.getCodigo(), r.getCliente().getNome());
+                imprimirItensPedido(ped.getItens());
+            }
+        }
+    }
+
     public void listarRemessas() {
         List<Remessa> remessas = sistema.getRemessas();
         System.out.println("\n========== REMESSAS (" + remessas.size() + ") ==========");
@@ -110,9 +126,8 @@ public class Listagem {
             return;
         }
 
-        int numPedido = 1;
         for (Pedido ped : pedidos) {
-            System.out.printf("%n   --- PEDIDO %d ---%n", numPedido++);
+            System.out.printf("%n   --- PEDIDO #%d ---%n", ped.getCodigo());
             imprimirItensPedido(ped.getItens());
         }
     }

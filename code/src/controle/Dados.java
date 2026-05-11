@@ -84,7 +84,7 @@ public class Dados {
 
         // 5. REMESSAS 
         Remessa r1 = new Remessa(1, t1, cliente);
-        Pedido pedido1 = new Pedido();
+        Pedido pedido1 = new Pedido(1);
         pedido1.adicionarItem(p3, 2);   // 2 cestas de morango
         pedido1.adicionarItem(p8, 1);   // 1 fone Bluetooth
         pedido1.adicionarItem(p15, 1);  // 1 bolo de cenoura
@@ -92,7 +92,7 @@ public class Dados {
         remessas.add(r1);
 
         Remessa r2 = new Remessa(2, t2, cliente);
-        Pedido pedido2 = new Pedido();
+        Pedido pedido2 = new Pedido(2);
         pedido2.adicionarItem(p1, 3);   // 3kg abacate
         pedido2.adicionarItem(p5, 2);   // 2 pacotes cenoura baby
         pedido2.adicionarItem(p11, 1);  // 1 hub USB-C
@@ -101,7 +101,7 @@ public class Dados {
         remessas.add(r2);
 
         Remessa r3 = new Remessa(3, t3, cliente);
-        Pedido pedido3 = new Pedido();
+        Pedido pedido3 = new Pedido(3);
         pedido3.adicionarItem(p4, 4);   // 4 pés de alface
         pedido3.adicionarItem(p7, 6);   // 6 mangas
         pedido3.adicionarItem(p9, 2);   // 2 carregadores solares
@@ -111,7 +111,7 @@ public class Dados {
         remessas.add(r3);
 
         Remessa r4 = new Remessa(4, t1, cliente);
-        Pedido pedido4 = new Pedido();
+        Pedido pedido4 = new Pedido(4);
         pedido4.adicionarItem(p2, 3);   // 3 bandejas tomate cereja
         pedido4.adicionarItem(p6, 2);   // 2 mix de folhas
         pedido4.adicionarItem(p10, 1);  // 1 luminária LED
