@@ -51,18 +51,7 @@ public class Listagem {
     }
 
     public String montarFornecedoresTexto(Produto p) {
-        if (p.getFornecedores().isEmpty()) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < p.getFornecedores().size(); i++) {
-            sb.append(p.getFornecedores().get(i).getNome());
-            if (i < p.getFornecedores().size() - 1) {
-                sb.append(", ");
-            }
-        }
-        return sb.toString();
+        return p.getFornecedoresTexto();
     }
 
     public void listarUsuarios() {

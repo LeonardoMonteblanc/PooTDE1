@@ -20,7 +20,7 @@ public class Consulta {
                 return;
             }
         }
-        System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
+        imprimirNaoEncontrado(codigo);
     }
 
     public void consultarFornecedorPorCodigo(int codigo) {
@@ -31,7 +31,7 @@ public class Consulta {
                 return;
             }
         }
-        System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
+        imprimirNaoEncontrado(codigo);
     }
 
     public void consultarProdutoPorCodigo(int codigo) {
@@ -39,18 +39,14 @@ public class Consulta {
         for (Produto p : produtos) {
             if (p.getCodigo() == codigo) {
                 System.out.printf("%n[Produto] [%d] %s - R$ %.2f%n", p.getCodigo(), p.getDescricao(), p.getPreco());
-                if (!p.getFornecedores().isEmpty()) {
-                    System.out.print("  Fornecedor(es): ");
-                    for (int i = 0; i < p.getFornecedores().size(); i++) {
-                        System.out.print(p.getFornecedores().get(i).getNome());
-                        if (i < p.getFornecedores().size() - 1) System.out.print(", ");
-                    }
-                    System.out.println();
+                String fornecedoresTexto = p.getFornecedoresTexto();
+                if (!fornecedoresTexto.isEmpty()) {
+                    System.out.println("  Fornecedor(es): " + fornecedoresTexto);
                 }
                 return;
             }
         }
-        System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
+        imprimirNaoEncontrado(codigo);
     }
 
     public void consultarTransportadoraPorCodigo(int codigo) {
@@ -61,7 +57,7 @@ public class Consulta {
                 return;
             }
         }
-        System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
+        imprimirNaoEncontrado(codigo);
     }
 
     public void consultarRemessaPorCodigo(int codigo) {
@@ -76,7 +72,22 @@ public class Consulta {
                 return;
             }
         }
-        System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
+        imprimirNaoEncontrado(codigo);
+    }
+
+    public void consultarPedidoPorCodigo(int codigo) {
+        List<Remessa> remessas = sistema.getRemessas();
+        for (Remessa r : remessas) {
+            for (Pedido p : r.getPedidos()) {
+                if (p.getCodigo() == codigo) {
+                    System.out.printf("%n>> PEDIDO #%d  (Remessa #%d | Cliente: %s) <<%n",
+                            p.getCodigo(), r.getCodigo(), r.getCliente().getNome());
+                    new Listagem(sistema).imprimirItensPedido(p.getItens());
+                    return;
+                }
+            }
+        }
+        imprimirNaoEncontrado(codigo);
     }
 
 
@@ -157,9 +168,27 @@ public class Consulta {
         return false;
     }
 
+    public boolean consultarPedidosPorTexto(String texto) {
+        String termo = texto.toLowerCase();
+        boolean encontrou = false;
+        for (Remessa r : sistema.getRemessas()) {
+            for (Pedido p : r.getPedidos()) {
+                if (pedidoMatchTexto(p, r, termo)) {
+                    if (!encontrou) {
+                        System.out.println("\n--- Pedidos ---");
+                        encontrou = true;
+                    }
+                    System.out.printf("  Pedido #%d | Remessa #%d | Cliente: %s | Transportadora: %s%n",
+                            p.getCodigo(), r.getCodigo(), r.getCliente().getNome(), r.getTransportadora().getNome());
+                }
+            }
+        }
+        return encontrou;
+    }
+
     public boolean consultarRemessasPorTexto(String texto) {
         texto = texto.toLowerCase();
-        List<Remessa>remessas = sistema.getRemessas();
+        List<Remessa> remessas = sistema.getRemessas();
         List<Remessa> remessasEncontradas = new ArrayList<>();
         for (Remessa r : remessas) {
             if (r.getCliente().getNome().toLowerCase().contains(texto) ||
@@ -178,5 +207,27 @@ public class Consulta {
             return true;
         }
         return false;
+    }
+
+    private boolean pedidoMatchTexto(Pedido pedido, Remessa remessa, String termo) {
+        if (String.valueOf(pedido.getCodigo()).contains(termo)) {
+            return true;
+        }
+        if (remessa.getCliente().getNome().toLowerCase().contains(termo)) {
+            return true;
+        }
+        if (remessa.getTransportadora().getNome().toLowerCase().contains(termo)) {
+            return true;
+        }
+        for (ItemPedido item : pedido.getItens()) {
+            if (item.getProduto().getDescricao().toLowerCase().contains(termo)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void imprimirNaoEncontrado(int codigo) {
+        System.out.println("Nenhum resultado encontrado com codigo " + codigo + ".");
     }
 }

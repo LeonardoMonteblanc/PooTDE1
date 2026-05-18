@@ -4,6 +4,7 @@ import java.util.Scanner;
 import modelo.*;
 
 public class MenuControle {
+    private static final String MENU_PEDIDOS = "pedidos";
     private SistemaControle sistema;
     private Listagem sisListagem;
     private Scanner scanner;
@@ -30,37 +31,36 @@ public class MenuControle {
     }
 
     public int validarAcao(String menu) {
-        int opcao;
         boolean admin = sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN;
+        boolean isPedidos = MENU_PEDIDOS.equals(menu);
+        while (true) {
+            System.out.println("Digite a acao desejada: ");
+            System.out.println("1. Listar");
+            System.out.println("2. Consultar");
 
-        System.out.println("Digite a acao desejada: ");
-        System.out.println("1. Listar");
-        System.out.println("2. Consultar");
+            if (isPedidos || admin) {
+                System.out.println("3. Cadastrar");
+            }
 
-        if(menu == "pedidos" || admin) {
-            System.out.println("3. Cadastrar");
+            if (admin) {
+                System.out.println("4. Alterar");
+                System.out.println("5. Excluir");
+            }
+            System.out.println("0. Voltar");
+
+            int opcao = lerInt();
+
+            if (admin && (opcao >= 0 && opcao <= 5)) {
+                return opcao;
+            }
+
+            if (!admin && (opcao == 0 || opcao == 1 || opcao == 2 || (opcao == 3 && isPedidos))) {
+                return opcao;
+            }
+
+            System.out.println("Opcao indisponivel para seu nivel de acesso");
         }
-
-        if(admin) {
-            System.out.println("4. Alterar");
-            System.out.println("5. Excluir");
-        }
-        System.out.println("0. Voltar");
-
-        opcao = scanner.nextInt();
-
-        if(admin && (opcao >= 0 && opcao <= 5)) {
-            return opcao;
-        } 
-
-        if(!admin && (opcao == 0 || opcao == 1 || opcao == 2 || (opcao == 3 && menu == "pedidos"))) {
-            return opcao;
-        }
-        
-        System.out.println("Opcao indisponivel para seu nivel de acesso");
-        return validarAcao(menu);
-
-        }
+    }
 
     public void gerenciarProdutos() {
         int opcao = validarAcao("produtos");
@@ -71,15 +71,14 @@ public class MenuControle {
                 break;
             case 2:
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
-                opcao = scanner.nextInt();
-                if(opcao == 1) {
+                opcao = lerInt();
+                if (opcao == 1) {
                     System.out.println("Digite o código:");
-                    int codigo = scanner.nextInt();
+                    int codigo = lerInt();
                     sisConsulta.consultarProdutoPorCodigo(codigo);
-                } else if(opcao == 2) {
+                } else if (opcao == 2) {
                     System.out.println("Digite o texto:");
-                    scanner.nextLine(); 
-                    String texto = scanner.nextLine();
+                    String texto = lerLinha();
                     sisConsulta.consultarProdutosPorTexto(texto);
                 } else {
                     System.out.println("Opcao inválida!");
@@ -108,15 +107,14 @@ public class MenuControle {
                 break;
             case 2:
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
-                opcao = scanner.nextInt();
-                if(opcao == 1) {
+                opcao = lerInt();
+                if (opcao == 1) {
                     System.out.println("Digite o código:");
-                    int codigo = scanner.nextInt();
+                    int codigo = lerInt();
                     sisConsulta.consultarFornecedorPorCodigo(codigo);
-                } else if(opcao == 2) {
+                } else if (opcao == 2) {
                     System.out.println("Digite o texto:");
-                    scanner.nextLine(); // limpar buffer
-                    String texto = scanner.nextLine();
+                    String texto = lerLinha();
                     sisConsulta.consultarFornecedoresPorTexto(texto);
                 } else {
                     System.out.println("Opcao inválida!");
@@ -145,15 +143,14 @@ public class MenuControle {
                 break;
             case 2:
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
-                opcao = scanner.nextInt();
-                if(opcao == 1) {
+                opcao = lerInt();
+                if (opcao == 1) {
                     System.out.println("Digite o código:");
-                    int codigo = scanner.nextInt();
+                    int codigo = lerInt();
                     sisConsulta.consultarUsuarioPorCodigo(codigo);
-                } else if(opcao == 2) {
+                } else if (opcao == 2) {
                     System.out.println("Digite o texto:");
-                    scanner.nextLine(); // limpar buffer
-                    String texto = scanner.nextLine();
+                    String texto = lerLinha();
                     sisConsulta.consultarUsuariosPorTexto(texto);
                 } else {
                     System.out.println("Opcao inválida!");
@@ -182,15 +179,14 @@ public class MenuControle {
                 break;
             case 2:
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
-                opcao = scanner.nextInt();
-                if(opcao == 1) {
+                opcao = lerInt();
+                if (opcao == 1) {
                     System.out.println("Digite o código:");
-                    int codigo = scanner.nextInt();
+                    int codigo = lerInt();
                     sisConsulta.consultarTransportadoraPorCodigo(codigo);
-                } else if(opcao == 2) {
+                } else if (opcao == 2) {
                     System.out.println("Digite o texto:");
-                    scanner.nextLine(); // limpar buffer
-                    String texto = scanner.nextLine();
+                    String texto = lerLinha();
                     sisConsulta.consultarTransportadorasPorTexto(texto);
                 } else {
                     System.out.println("Opcao inválida!");
@@ -215,17 +211,19 @@ public class MenuControle {
 
         switch (opcao) {
             case 1:
-                sisListagem.listarRemessas();
+                sisListagem.listarPedidos();
                 break;
             case 2:
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
-                opcao = scanner.nextInt();
-                if(opcao == 1) {
-                    int codigo = scanner.nextInt();
-                    sisConsulta.consultarRemessaPorCodigo(codigo);
-                } else if(opcao == 2) {
-                    String texto = scanner.nextLine();
-                    sisConsulta.consultarRemessasPorTexto(texto);
+                opcao = lerInt();
+                if (opcao == 1) {
+                    System.out.println("Digite o código:");
+                    int codigo = lerInt();
+                    sisConsulta.consultarPedidoPorCodigo(codigo);
+                } else if (opcao == 2) {
+                    System.out.println("Digite o texto:");
+                    String texto = lerLinha();
+                    sisConsulta.consultarPedidosPorTexto(texto);
                 } else {
                     System.out.println("Opcao inválida!");
                 }
@@ -253,15 +251,14 @@ public class MenuControle {
                 break;
             case 2:
                 System.out.println("1. Consulta por código:\n2. Consulta por texto");
-                opcao = scanner.nextInt();
-                if(opcao == 1) {
+                opcao = lerInt();
+                if (opcao == 1) {
                     System.out.println("Digite o código:");
-                    int codigo = scanner.nextInt();
+                    int codigo = lerInt();
                     sisConsulta.consultarRemessaPorCodigo(codigo);
-                } else if(opcao == 2) {
+                } else if (opcao == 2) {
                     System.out.println("Digite o texto:");
-                    scanner.nextLine(); // limpar buffer
-                    String texto = scanner.nextLine();
+                    String texto = lerLinha();
                     sisConsulta.consultarRemessasPorTexto(texto);
                 } else {
                     System.out.println("Opcao inválida!");
@@ -279,6 +276,16 @@ public class MenuControle {
             default:
                 break;
         }
+    }
+
+    private int lerInt() {
+        int valor = scanner.nextInt();
+        scanner.nextLine();
+        return valor;
+    }
+
+    private String lerLinha() {
+        return scanner.nextLine();
     }
     
 }
