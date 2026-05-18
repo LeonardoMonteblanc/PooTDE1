@@ -1,6 +1,5 @@
 package controle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -9,23 +8,23 @@ import modelo.*;
 // Consolida todas as informações que o sistema precisa
 // a partir de novas instancias isso é levado para outras classes
 public class SistemaControle {
-    private List<Fornecedor> fornecedores = new ArrayList<>();
-    private List<Produto> produtos = new ArrayList<>();
-    private List<Remessa> remessas = new ArrayList<>();
+    private final List<Fornecedor> fornecedores;
+    private final List<Produto> produtos;
+    private final List<Remessa> remessas;
     private Usuario usuarioLogado;
-    private List<Usuario> usuarios = new ArrayList<>();
-    private List<Transportadora> transportadoras  = new ArrayList<>();
-    private Dados dados;
-    private MenuControle menuControle;
+    private final List<Usuario> usuarios;
+    private final List<Transportadora> transportadoras;
+    private final Dados dados;
+    private final MenuControle menuControle;
     private final Scanner scanner = new Scanner(System.in);
 
     public SistemaControle(Dados d) {
         this.dados = d;
-        usuarios = d.usuarios;
-        fornecedores = d.fornecedores;
-        produtos = d.produtos;
-        transportadoras = d.transportadoras;
-        remessas = d.remessas;
+        usuarios = d.getUsuarios();
+        fornecedores = d.getFornecedores();
+        produtos = d.getProdutos();
+        transportadoras = d.getTransportadoras();
+        remessas = d.getRemessas();
         Listagem listagem = new Listagem(this);
         Consulta consulta = new Consulta(this);
         this.menuControle = new MenuControle(this, listagem, consulta, scanner);
@@ -112,6 +111,16 @@ public class SistemaControle {
         return maior + 1;
     }
 
+    public int geraCodigoRemessa() {
+        int maior = 0;
+        for (Remessa r : remessas) {
+            if (r.getCodigo() > maior) {
+                maior = r.getCodigo();
+            }
+        }
+        return maior + 1;
+    }
+
     public Pedido getPedidoByCodigo(int codigo) {
         for (Remessa r : remessas) {
             for (Pedido p : r.getPedidos()) {
@@ -130,6 +139,12 @@ public class SistemaControle {
             }
         }
         return null;
+    }
+
+    public void removerPedidoDeTodasRemessas(Pedido pedido) {
+        for (Remessa r : remessas) {
+            r.removerPedido(pedido);
+        }
     }
 
     public boolean validarLogin() {

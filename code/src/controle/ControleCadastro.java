@@ -6,31 +6,29 @@ import modelo.*;
 public class ControleCadastro {
     private SistemaControle sistema;
     private Scanner scanner;
+    private Listagem listagem;
 
     public ControleCadastro(SistemaControle sistema, Scanner scanner) {
         this.sistema = sistema;
         this.scanner = scanner;
+        this.listagem = new Listagem(sistema);
     }
 
     // ========== PRODUTOS ==========
     public void cadastrarProduto() {
         System.out.println("=== Cadastrar Produto ===");
         System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
         System.out.println("Descrição: ");
-        String desc = scanner.nextLine();
+        String desc = lerLinha();
         System.out.println("Preço: ");
-        String precoStr = scanner.nextLine().replace(",", ".");
+        String precoStr = lerLinha().replace(",", ".");
         double preco = Double.parseDouble(precoStr);
         Produto novoProd = new Produto(cod, desc, preco);
-
-        Listagem listagem = new Listagem(sistema);
         listagem.listarFornecedores();
 
         System.out.println("Digite o codigo do fornecedor: ");
-        int codFornecedor = scanner.nextInt();
-        scanner.nextLine();
+        int codFornecedor = lerInt();
 
         // Vincula só um fornecedor por produto
         if (codFornecedor != 0) {
@@ -50,8 +48,7 @@ public class ControleCadastro {
     public void alterarProduto() {
         System.out.println("=== Alterar Produto ===");
         System.out.println("Código do produto a alterar: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Produto produto = sistema.getProdutoByCodigo(cod);
 
@@ -61,13 +58,13 @@ public class ControleCadastro {
         }
 
         System.out.println("Descrição (atual: " + produto.getDescricao() + "): ");
-        String desc = scanner.nextLine();
+        String desc = lerLinha();
         if (!desc.isEmpty()) {
             produto.setDescricao(desc);
         }
 
         System.out.println("Preço (atual: " + produto.getPreco() + "): ");
-        String precoStr = scanner.nextLine().replace(",", ".");
+        String precoStr = lerLinha().replace(",", ".");
         if (!precoStr.isEmpty()) {
             produto.setPreco(Double.parseDouble(precoStr));
         }
@@ -78,8 +75,7 @@ public class ControleCadastro {
     public void excluirProduto() {
         System.out.println("=== Excluir Produto ===");
         System.out.println("Código do produto a excluir: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Produto produto = sistema.getProdutoByCodigo(cod);
 
@@ -96,12 +92,11 @@ public class ControleCadastro {
     public void cadastrarFornecedor() {
         System.out.println("=== Cadastrar Fornecedor ===");
         System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
         System.out.println("Nome: ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         System.out.println("CNPJ: ");
-        String cnpj = scanner.nextLine();
+        String cnpj = lerLinha();
         Fornecedor novoFor = new Fornecedor(cod, nome, cnpj);
         sistema.getFornecedores().add(novoFor);
         System.out.println("✓ Fornecedor cadastrado!");
@@ -110,8 +105,7 @@ public class ControleCadastro {
     public void alterarFornecedor() {
         System.out.println("=== Alterar Fornecedor ===");
         System.out.println("Código do fornecedor a alterar: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Fornecedor fornecedor = sistema.getFornecedorByCodigo(cod);
 
@@ -121,13 +115,13 @@ public class ControleCadastro {
         }
 
         System.out.println("Nome (atual: " + fornecedor.getNome() + "): ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         if (!nome.isEmpty()) {
             fornecedor.setNome(nome);
         }
 
         System.out.println("CNPJ (atual: " + fornecedor.getCnpj() + "): ");
-        String cnpj = scanner.nextLine();
+        String cnpj = lerLinha();
         if (!cnpj.isEmpty()) {
             fornecedor.setCnpj(cnpj);
         }
@@ -138,8 +132,7 @@ public class ControleCadastro {
     public void excluirFornecedor() {
         System.out.println("=== Excluir Fornecedor ===");
         System.out.println("Código do fornecedor a excluir: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Fornecedor fornecedor = sistema.getFornecedorByCodigo(cod);
 
@@ -156,16 +149,15 @@ public class ControleCadastro {
     public void cadastrarUsuario() {
         System.out.println("=== Cadastrar Usuário ===");
         System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
         System.out.println("Nome: ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         System.out.println("Login: ");
-        String login = scanner.nextLine();
+        String login = lerLinha();
         System.out.println("Senha: ");
-        String senha = scanner.nextLine();
+        String senha = lerLinha();
         System.out.println("Nível de acesso (ADMIN/CLIENTE): ");
-        String nivel = scanner.nextLine().toUpperCase();
+        String nivel = lerLinha().toUpperCase();
         NivelAcesso nivelAcesso = NivelAcesso.valueOf(nivel);
         Usuario novoUser = new Usuario(cod, nome, login, senha, nivelAcesso);
         sistema.getUsuarios().add(novoUser);
@@ -175,8 +167,7 @@ public class ControleCadastro {
     public void alterarUsuario() {
         System.out.println("=== Alterar Usuário ===");
         System.out.println("Código do usuário a alterar: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Usuario usuario = sistema.getUsuarioByCodigo(cod);
 
@@ -186,25 +177,25 @@ public class ControleCadastro {
         }
 
         System.out.println("Nome (atual: " + usuario.getNome() + "): ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         if (!nome.isEmpty()) {
             usuario.setNome(nome);
         }
 
         System.out.println("Login (atual: " + usuario.getLogin() + "): ");
-        String login = scanner.nextLine();
+        String login = lerLinha();
         if (!login.isEmpty()) {
             usuario.setLogin(login);
         }
 
         System.out.println("Senha (atual: " + usuario.getSenha() + "): ");
-        String senha = scanner.nextLine();
+        String senha = lerLinha();
         if (!senha.isEmpty()) {
             usuario.setSenha(senha);
         }
 
         System.out.println("Nível de acesso (atual: " + usuario.getNivelAcesso() + ") - (ADMIN/CLIENTE): ");
-        String nivel = scanner.nextLine().toUpperCase();
+        String nivel = lerLinha().toUpperCase();
         if (!nivel.isEmpty()) {
             usuario.setNivelAcesso(NivelAcesso.valueOf(nivel));
         }
@@ -215,8 +206,7 @@ public class ControleCadastro {
     public void excluirUsuario() {
         System.out.println("=== Excluir Usuário ===");
         System.out.println("Código do usuário a excluir: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Usuario usuario = sistema.getUsuarioByCodigo(cod);
 
@@ -233,10 +223,9 @@ public class ControleCadastro {
     public void cadastrarTransportadora() {
         System.out.println("=== Cadastrar Transportadora ===");
         System.out.println("Código: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
         System.out.println("Nome: ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         Transportadora novaTransp = new Transportadora(cod, nome);
         sistema.getTransportadora().add(novaTransp);
         System.out.println("✓ Transportadora cadastrada!");
@@ -245,8 +234,7 @@ public class ControleCadastro {
     public void alterarTransportadora() {
         System.out.println("=== Alterar Transportadora ===");
         System.out.println("Código da transportadora a alterar: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Transportadora transportadora = sistema.getTransportadoraByCodigo(cod);
 
@@ -256,7 +244,7 @@ public class ControleCadastro {
         }
 
         System.out.println("Nome (atual: " + transportadora.getNome() + "): ");
-        String nome = scanner.nextLine();
+        String nome = lerLinha();
         if (!nome.isEmpty()) {
             transportadora.setNome(nome);
         }
@@ -267,8 +255,7 @@ public class ControleCadastro {
     public void excluirTransportadora() {
         System.out.println("=== Excluir Transportadora ===");
         System.out.println("Código da transportadora a excluir: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Transportadora transportadora = sistema.getTransportadoraByCodigo(cod);
 
@@ -285,8 +272,7 @@ public class ControleCadastro {
     public void alterarRemessa() {
         System.out.println("=== Alterar Remessa ===");
         System.out.println("Código da remessa a alterar: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Remessa remessa = sistema.getRemessaByCodigo(cod);
 
@@ -296,7 +282,7 @@ public class ControleCadastro {
         }
 
         System.out.println("Código da transportadora (atual: " + remessa.getTransportadora().getCodigo() + "): ");
-        String transpStr = scanner.nextLine();
+        String transpStr = lerLinha();
         if (!transpStr.isEmpty()) {
             int codTransp = Integer.parseInt(transpStr);
             Transportadora transp = sistema.getTransportadoraByCodigo(codTransp);
@@ -311,8 +297,7 @@ public class ControleCadastro {
     public void excluirRemessa() {
         System.out.println("=== Excluir Remessa ===");
         System.out.println("Código da remessa a excluir: ");
-        int cod = scanner.nextInt();
-        scanner.nextLine();
+        int cod = lerInt();
 
         Remessa remessa = sistema.getRemessaByCodigo(cod);
 
@@ -328,12 +313,10 @@ public class ControleCadastro {
     // ========== PEDIDOS ==========
     public void alterarPedido() {
         System.out.println("=== Alterar Pedido ===");
-        Listagem listagem = new Listagem(sistema);
         listagem.listarPedidos();
 
         System.out.println("Código do pedido a alterar: ");
-        int codPedido = scanner.nextInt();
-        scanner.nextLine();
+        int codPedido = lerInt();
 
         Pedido pedido = sistema.getPedidoByCodigo(codPedido);
         if (pedido == null) {
@@ -349,30 +332,26 @@ public class ControleCadastro {
             System.out.println("2. Remover item");
             System.out.println("3. Alterar quantidade de um item");
             System.out.println("0. Finalizar alteração");
-            int opcao = scanner.nextInt();
-            scanner.nextLine();
+            int opcao = lerInt();
 
             switch (opcao) {
                 case 1:
                     listagem.listarProdutos();
                     System.out.println("Código do produto: ");
-                    int codProd = scanner.nextInt();
-                    scanner.nextLine();
+                    int codProd = lerInt();
                     Produto produto = sistema.getProdutoByCodigo(codProd);
                     if (produto == null) {
                         System.out.println("✗ Produto não encontrado!");
                         break;
                     }
                     System.out.println("Quantidade: ");
-                    int qtd = scanner.nextInt();
-                    scanner.nextLine();
+                    int qtd = lerInt();
                     pedido.adicionarItem(produto, qtd);
                     System.out.println("✓ Item adicionado!");
                     break;
                 case 2:
                     System.out.println("Código do produto a remover: ");
-                    int codRemover = scanner.nextInt();
-                    scanner.nextLine();
+                    int codRemover = lerInt();
                     Produto prodRemover = sistema.getProdutoByCodigo(codRemover);
                     if (prodRemover == null) {
                         System.out.println("✗ Produto não encontrado!");
@@ -383,16 +362,14 @@ public class ControleCadastro {
                     break;
                 case 3:
                     System.out.println("Código do produto a alterar quantidade: ");
-                    int codAlterar = scanner.nextInt();
-                    scanner.nextLine();
+                    int codAlterar = lerInt();
                     ItemPedido itemAlterar = pedido.getItemByCodigoProduto(codAlterar);
                     if (itemAlterar == null) {
                         System.out.println("✗ Item não encontrado no pedido!");
                         break;
                     }
                     System.out.println("Nova quantidade (atual: " + itemAlterar.getQuantidade() + "): ");
-                    int novaQtd = scanner.nextInt();
-                    scanner.nextLine();
+                    int novaQtd = lerInt();
                     itemAlterar.setQuantidade(novaQtd);
                     System.out.println("✓ Quantidade alterada!");
                     break;
@@ -409,12 +386,10 @@ public class ControleCadastro {
 
     public void excluirPedido() {
         System.out.println("=== Excluir Pedido ===");
-        Listagem listagem = new Listagem(sistema);
         listagem.listarPedidos();
 
         System.out.println("Código do pedido a excluir: ");
-        int codPedido = scanner.nextInt();
-        scanner.nextLine();
+        int codPedido = lerInt();
 
         Pedido pedido = sistema.getPedidoByCodigo(codPedido);
         if (pedido == null) {
@@ -422,24 +397,19 @@ public class ControleCadastro {
             return;
         }
 
-        Remessa remessa = sistema.getRemessaByPedido(pedido);
-        if (remessa != null) {
-            remessa.removerPedido(pedido);
-        }
+        sistema.removerPedidoDeTodasRemessas(pedido);
         System.out.println("✓ Pedido excluído!");
     }
 
     public void cadastrarPedido() {
         System.out.println("=== Fazer Pedido ===");
-
-        Listagem listagem = new Listagem(sistema);
         Pedido pedido = new Pedido(sistema.geraCodigoPedido());
         boolean addProduto = true;
 
         while (addProduto) {
             listagem.listarProdutos();
             System.out.println("Digite o código do produto (ou 0 para finalizar): ");
-            int codigoProduto = scanner.nextInt();
+            int codigoProduto = lerInt();
 
             if (codigoProduto == 0) {
                 addProduto = false;
@@ -454,10 +424,15 @@ public class ControleCadastro {
 
             System.out.println("Produto: " + produtoSelecionado.getDescricao() + "= R$ " + String.format("%.2f", produtoSelecionado.getPreco()));
             System.out.println("Digite a quantidade: ");
-            int quantidade = scanner.nextInt();
+            int quantidade = lerInt();
 
             pedido.adicionarItem(produtoSelecionado, quantidade);
             System.out.println("Item adicionado");
+        }
+
+        if (pedido.getItens().isEmpty()) {
+            System.out.println("✗ Pedido sem itens! Pedido não criado.");
+            return;
         }
 
         System.out.println("=== Resumo do Pedido ===");
@@ -471,7 +446,7 @@ public class ControleCadastro {
 
         listagem.listarTransportadoras();
         System.out.println("Digite o código da transportadora (codigo): ");
-        int codigoTransp = scanner.nextInt();
+        int codigoTransp = lerInt();
 
         Transportadora transportadora = sistema.getTransportadoraByCodigo(codigoTransp);
         if (transportadora == null) {
@@ -479,7 +454,7 @@ public class ControleCadastro {
             return;
         }
 
-        Remessa remessa = new Remessa(sistema.getRemessas().size() + 1, transportadora, sistema.getUsuarioLogado());
+        Remessa remessa = new Remessa(sistema.geraCodigoRemessa(), transportadora, sistema.getUsuarioLogado());
         remessa.adicionarPedido(pedido);
         sistema.getRemessas().add(remessa);
 
@@ -489,13 +464,11 @@ public class ControleCadastro {
     // ========== CADASTRO DE REMESSAS COM PEDIDOS ==========
     public void cadastrarRemessaComPedido() {
         System.out.println("=== Cadastrar Remessa com Pedido ===");
-        System.out.println("Código da remessa: ");
-        int codRemessa = scanner.nextInt();
-        scanner.nextLine();
+        int codRemessa = sistema.geraCodigoRemessa();
+        System.out.println("Código da remessa gerado: " + codRemessa);
 
         System.out.println("Código da transportadora: ");
-        int codTransp = scanner.nextInt();
-        scanner.nextLine();
+        int codTransp = lerInt();
 
         Transportadora transportadora = sistema.getTransportadoraByCodigo(codTransp);
 
@@ -505,8 +478,7 @@ public class ControleCadastro {
         }
 
         System.out.println("Código do cliente (usuário): ");
-        int codCliente = scanner.nextInt();
-        scanner.nextLine();
+        int codCliente = lerInt();
 
         Usuario cliente = sistema.getUsuarioByCodigo(codCliente);
 
@@ -521,12 +493,11 @@ public class ControleCadastro {
 
         // Adicionar itens ao pedido
         boolean adicionarMais = true;
-        new Listagem(sistema).listarProdutos();
+        listagem.listarProdutos();
         while (adicionarMais) {
             System.out.println("\n--- Adicionar Item ao Pedido ---");
             System.out.println("Código do produto (ou 0 para finalizar): ");
-            int codProduto = scanner.nextInt();
-            scanner.nextLine();
+            int codProduto = lerInt();
 
             if (codProduto == 0) {
                 adicionarMais = false;
@@ -541,8 +512,7 @@ public class ControleCadastro {
             }
 
             System.out.println("Quantidade: ");
-            int quantidade = scanner.nextInt();
-            scanner.nextLine();
+            int quantidade = lerInt();
 
             novoPedido.adicionarItem(produto, quantidade);
             System.out.println("✓ Item adicionado: " + produto.getDescricao() + " (qtd: " + quantidade + ")");
@@ -557,5 +527,15 @@ public class ControleCadastro {
         novaRemessa.adicionarPedido(novoPedido);
         sistema.getRemessas().add(novaRemessa);
         System.out.println("✓ Remessa cadastrada com sucesso! Código: " + codRemessa);
+    }
+
+    private int lerInt() {
+        int valor = scanner.nextInt();
+        scanner.nextLine();
+        return valor;
+    }
+
+    private String lerLinha() {
+        return scanner.nextLine();
     }
 }

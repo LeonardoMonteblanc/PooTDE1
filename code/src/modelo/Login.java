@@ -7,7 +7,7 @@ public class Login {
     private List<Usuario> usuarios;
 
     public Login(Dados d) {
-        this.usuarios = d.usuarios;
+        this.usuarios = d.getUsuarios();
     }
     // recebe o input e verifica se ele existe na lista de usuarios
     public Usuario logar(String login, String senha) {

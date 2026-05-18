@@ -44,6 +44,21 @@ public class Produto {
     public List<Fornecedor> getFornecedores() {
         return fornecedores;
     }
+
+    public String getFornecedoresTexto() {
+        if (fornecedores.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < fornecedores.size(); i++) {
+            sb.append(fornecedores.get(i).getNome());
+            if (i < fornecedores.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        return sb.toString();
+    }
 // SETS ======================================================
     public void setCodigo(int cod) {
         this.codigo = cod;
