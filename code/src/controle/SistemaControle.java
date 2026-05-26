@@ -14,19 +14,21 @@ public class SistemaControle {
     private Usuario usuarioLogado;
     private final List<Usuario> usuarios;
     private final List<Transportadora> transportadoras;
-    private final Dados dados;
+    private final Dados dados = new Dados();
     private final MenuControle menuControle;
     private final Scanner scanner = new Scanner(System.in);
-
+    private final List<Object> lista;
+    
     public SistemaControle(Dados d) {
-        this.dados = d;
-        usuarios = d.getUsuarios();
-        fornecedores = d.getFornecedores();
-        produtos = d.getProdutos();
-        transportadoras = d.getTransportadoras();
-        remessas = d.getRemessas();
-        Listagem listagem = new Listagem(this);
-        Consulta consulta = new Consulta(this);
+        this.lista = d.getDados();
+        usuarios = (List<Usuario>) (Object) lista.get(0);
+        fornecedores = (List<Fornecedor>) (Object) lista.get(1);
+        produtos = (List<Produto>) (Object) lista.get(2);
+        transportadoras = (List<Transportadora>) (Object) lista.get(3);
+        remessas = (List<Remessa>) (Object) lista.get(4);
+
+        Listagem listagem = new Listagem(d);
+        Consulta consulta = new Consulta(d);
         this.menuControle = new MenuControle(this, listagem, consulta, scanner);
     }
     
@@ -34,125 +36,12 @@ public class SistemaControle {
         return usuarioLogado;
     }
 
-    public List<Transportadora> getTransportadora(){
-        return transportadoras;
-    }
-
-    public Transportadora getTransportadoraByCodigo(int codigo){
-        for(Transportadora t : transportadoras){
-            if(t.getCodigo() == codigo){
-                return t;
-            }
-        }
-        return null;
-    }
-
-    public List<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public List<Fornecedor> getFornecedores() {
-        return fornecedores;
-    }
-    
-    public List<Remessa> getRemessas() {
-        return remessas;
-    }
-
-    public List<Produto> getProdutos(){
-        return produtos;
-    }
-
-    public Fornecedor getFornecedorByCodigo(int codigo) {
-        for (Fornecedor f : fornecedores) {
-            if (f.getCodigo() == codigo) {
-                return f;
-            }
-        }
-        return null;
-    }
-
-    public Usuario getUsuarioByCodigo(int codigo) {
-        for (Usuario u : usuarios) {
-            if (u.getCodigo() == codigo) {
-                return u;
-            }
-        }
-        return null;
-    }
-
-    public Remessa getRemessaByCodigo(int codigo) {
-        for (Remessa r : remessas) {
-            if (r.getCodigo() == codigo) {
-                return r;
-            }
-        }
-        return null;
-    }
-
-    public Produto getProdutoByCodigo(int codigo){
-        for(Produto p : produtos){
-            if(p.getCodigo() == codigo){
-                return p;
-            }
-        }
-        return null;
-    }
-
-    public int geraCodigoPedido() {
-        int maior = 0;
-        for (Remessa r : remessas) {
-            for (Pedido p : r.getPedidos()) {
-                if (p.getCodigo() > maior) {
-                    maior = p.getCodigo();
-                }
-            }
-        }
-        return maior + 1;
-    }
-
-    public int geraCodigoRemessa() {
-        int maior = 0;
-        for (Remessa r : remessas) {
-            if (r.getCodigo() > maior) {
-                maior = r.getCodigo();
-            }
-        }
-        return maior + 1;
-    }
-
-    public Pedido getPedidoByCodigo(int codigo) {
-        for (Remessa r : remessas) {
-            for (Pedido p : r.getPedidos()) {
-                if (p.getCodigo() == codigo) {
-                    return p;
-                }
-            }
-        }
-        return null;
-    }
-
-    public Remessa getRemessaByPedido(Pedido pedido) {
-        for (Remessa r : remessas) {
-            if (r.getPedidos().contains(pedido)) {
-                return r;
-            }
-        }
-        return null;
-    }
-
-    public void removerPedidoDeTodasRemessas(Pedido pedido) {
-        for (Remessa r : remessas) {
-            r.removerPedido(pedido);
-        }
-    }
-
     public boolean validarLogin() {
         String[] credencial = menuControle.inputLogin();
         String login = credencial[0];
         String senha = credencial[1];
 
-        Login l = new Login(dados);
+        Login l = new Login(usuarios);
         usuarioLogado = l.logar(login, senha);
 
         if(usuarioLogado == null) {
@@ -190,10 +79,6 @@ public class SistemaControle {
         }
     }
 
-
-    // traz os dados do arquivo para o sistema
-    // solicita o login do usuario para permitir as funções 
-    
     
 
 }

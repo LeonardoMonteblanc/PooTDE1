@@ -1,14 +1,14 @@
 package modelo;
 import java.util.List;
 
-import controle.Dados;
 
 public class Login {
     private List<Usuario> usuarios;
 
-    public Login(Dados d) {
-        this.usuarios = d.getUsuarios();
+    public Login(List<Usuario> d) {
+        this.usuarios = d;
     }
+    
     // recebe o input e verifica se ele existe na lista de usuarios
     public Usuario logar(String login, String senha) {
         for(Usuario u : usuarios) {

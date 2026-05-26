@@ -4,12 +4,14 @@ import java.util.Scanner;
 import modelo.*;
 
 public class ControleCadastro {
-    private SistemaControle sistema;
+    private Dados sistema;
+    private SistemaControle sis;
     private Scanner scanner;
     private Listagem listagem;
 
-    public ControleCadastro(SistemaControle sistema, Scanner scanner) {
+    public ControleCadastro(Dados sistema, Scanner scanner, SistemaControle sis) {
         this.sistema = sistema;
+        this.sis = sis;
         this.scanner = scanner;
         this.listagem = new Listagem(sistema);
     }
@@ -454,7 +456,7 @@ public class ControleCadastro {
             return;
         }
 
-        Remessa remessa = new Remessa(sistema.geraCodigoRemessa(), transportadora, sistema.getUsuarioLogado());
+        Remessa remessa = new Remessa(sistema.geraCodigoRemessa(), transportadora, sis.getUsuarioLogado());
         remessa.adicionarPedido(pedido);
         sistema.getRemessas().add(remessa);
 

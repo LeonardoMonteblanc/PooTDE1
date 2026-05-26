@@ -5,15 +5,15 @@ import java.util.List;
 import modelo.*;
 
 public class Listagem {
-    private SistemaControle sistema;
+    private Dados d;
     
-    public Listagem(SistemaControle sis){
-        this.sistema = sis;
+    public Listagem(Dados d){
+        this.d = d;
     }
 
     public void listarProdutos() {
-        int qtdprodutos = sistema.getProdutos().size();
-        List<Produto> produtos = sistema.getProdutos();
+        int qtdprodutos = d.getProdutos().size();
+        List<Produto> produtos = d.getProdutos();
 
         System.out.println("\n========== PRODUTOS (" + qtdprodutos + ") ==========");
         if (produtos.isEmpty()) {
@@ -55,7 +55,7 @@ public class Listagem {
     }
 
     public void listarUsuarios() {
-        List<Usuario> usuarios = sistema.getUsuarios();
+        List<Usuario> usuarios = d.getUsuarios();
         System.out.println("\n========== USUARIOS (" + usuarios.size() + ") ==========");
         for (Usuario u : usuarios) {
             System.out.printf("%s (%s) - %s%n", u.getNome(), u.getLogin(), u.getNivelAcesso().name());
@@ -63,7 +63,7 @@ public class Listagem {
     }
 
     public void listarFornecedores() {
-        List<Fornecedor> fornecedores = sistema.getFornecedores();
+        List<Fornecedor> fornecedores = d.getFornecedores();
         System.out.println("\n========== FORNECEDORES (" + fornecedores.size() + ") ==========");
         for (Fornecedor f : fornecedores) {
             System.out.printf("[%03d] %s - CNPJ: %s%n", f.getCodigo(), f.getNome(), f.getCnpj());
@@ -71,7 +71,7 @@ public class Listagem {
     }
 
     public void listarTransportadoras() {
-        List<Transportadora> transportadoras = sistema.getTransportadora();
+        List<Transportadora> transportadoras = d.getTransportadora();
         System.out.println("\n========== TRANSPORTADORAS (" + transportadoras.size() + ") ==========");
         for (Transportadora t : transportadoras) {
             System.out.printf("[%03d] %s%n", t.getCodigo(), t.getNome());
@@ -79,7 +79,7 @@ public class Listagem {
     }
 
     public void listarPedidos() {
-        List<Remessa> remessas = sistema.getRemessas();
+        List<Remessa> remessas = d.getRemessas();
         int totalPedidos = 0;
         for (Remessa r : remessas) {
             totalPedidos += r.getPedidos().size();
@@ -95,7 +95,7 @@ public class Listagem {
     }
 
     public void listarRemessas() {
-        List<Remessa> remessas = sistema.getRemessas();
+        List<Remessa> remessas = d.getRemessas();
         System.out.println("\n========== REMESSAS (" + remessas.size() + ") ==========");
         for (Remessa r : remessas) {
             imprimirCabecalhoRemessa(r);

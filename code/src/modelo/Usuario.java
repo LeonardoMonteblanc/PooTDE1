@@ -4,6 +4,7 @@ public class Usuario extends Pessoa {
     private String login;
     private String senha;
     private NivelAcesso nivelAcesso;
+    
 
     public Usuario(int codigo, String nome, String login, String senha, NivelAcesso nivelAcesso) {
         super(codigo, nome);
@@ -27,6 +28,8 @@ public class Usuario extends Pessoa {
     public boolean temPermissao(Permissao p) {
         return nivelAcesso.temPermissao(p);
     }
+
+
 // SETS ======================================================
     public void setLogin(String login) {
         this.login = login;

@@ -5,18 +5,19 @@ import modelo.*;
 
 public class MenuControle {
     private static final String MENU_PEDIDOS = "pedidos";
-    private SistemaControle sistema;
+    private Dados d;
+    private SistemaControle sis;
     private Listagem sisListagem;
     private Scanner scanner;
     private Consulta sisConsulta;
     private ControleCadastro sisControleCadastro;
     // receber inputs do usuario e manipular o menu
     public MenuControle(SistemaControle sis, Listagem lis, Consulta cos, Scanner scan) {
-        this.sistema = sis;
+        this.sis = sis;
         this.sisListagem = lis;
         this.sisConsulta = cos;
         this.scanner = scan;
-        this.sisControleCadastro = new ControleCadastro(sis, scan);
+        this.sisControleCadastro = new ControleCadastro(d, scan, sis);
     }
 
     public String[] inputLogin() {
@@ -31,7 +32,7 @@ public class MenuControle {
     }
 
     public int validarAcao(String menu) {
-        boolean admin = sistema.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN;
+        boolean admin = sis.getUsuarioLogado().getNivelAcesso() == NivelAcesso.ADMIN;
         boolean isPedidos = MENU_PEDIDOS.equals(menu);
         while (true) {
             System.out.println("Digite a acao desejada: ");

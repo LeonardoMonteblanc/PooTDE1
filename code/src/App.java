@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 import controle.Dados;
 import controle.SistemaControle;
 
@@ -13,7 +15,6 @@ public class App {
         if(gerenciador.validarLogin()) {
             gerenciador.menu();
         } 
-
 
     }
 }

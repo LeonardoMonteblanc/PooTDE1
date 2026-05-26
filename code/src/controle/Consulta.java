@@ -6,9 +6,9 @@ import java.util.List;
 import modelo.*;
 
 public class Consulta {
-    private SistemaControle sistema;
+    private Dados sistema;
 
-    public Consulta(SistemaControle sis) {
+    public Consulta(Dados sis) {
         this.sistema = sis;
     }
 
