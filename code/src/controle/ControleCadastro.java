@@ -1,5 +1,7 @@
 package controle;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import modelo.*;
 
@@ -15,15 +17,24 @@ public class ControleCadastro {
     }
 
     // ========== PRODUTOS ==========
+            // System.out.println("=== Cadastrar Produto ===");
+        // System.out.println();
+        // int cod = lerInt();
+        // System.out.println("Descrição: ");
+        // String desc = lerLinha();
     public void cadastrarProduto() {
-        System.out.println("=== Cadastrar Produto ===");
-        System.out.println("Código: ");
-        int cod = lerInt();
-        System.out.println("Descrição: ");
-        String desc = lerLinha();
-        System.out.println("Preço: ");
-        String precoStr = lerLinha().replace(",", ".");
-        double preco = Double.parseDouble(precoStr);
+        List<Input> listInput = criaInput(List.of(
+            List.of("Código do produto: ", "int"), 
+            List.of("Descrição: ", "string"),
+            List.of("Preço: ", "double")
+        )
+        );
+        ArrayList<Object> inputCadastro = inputCadastro("=== Cadastrar Produto ===", listInput);
+
+        int cod = (Integer) inputCadastro.get(0);
+        String desc = (String) inputCadastro.get(1);
+        Double preco = (Double) inputCadastro.get(2);
+     
         Produto novoProd = new Produto(cod, desc, preco);
         listagem.listarFornecedores();
 
@@ -537,5 +548,47 @@ public class ControleCadastro {
 
     private String lerLinha() {
         return scanner.nextLine();
+    }
+
+    private List<Input> criaInput(List<List<String>> jorge) {
+        List<Input> c = new ArrayList<>();
+        for (List<String> j : jorge) {
+            Input pau = new Input(j.get(0), j.get(1));
+            c.add(pau);
+        }
+        return c;
+    } 
+
+    public ArrayList<Object> inputCadastro(String titulo, List<Input> inputs) {
+        System.out.println(titulo);
+        System.out.println();
+
+        ArrayList<Object> respostas = new ArrayList<>();
+
+        if(inputs.isEmpty()) {
+            return respostas;
+        }
+
+        for (Input i : inputs) {
+            System.out.println(i.label);
+
+            switch(i.tipo) {
+                case "int":
+                    int num = lerInt();
+                    respostas.add(num);
+                    continue;
+                case "double":
+                    String precoStr = lerLinha().replace(",", ".");
+                    double preco = Double.parseDouble(precoStr);
+                    respostas.add(preco);
+                    continue;
+                case "string":
+                    String strg = lerLinha();
+                    respostas.add(strg);
+                    continue;
+            }
+        }
+
+        return respostas;
     }
 }
