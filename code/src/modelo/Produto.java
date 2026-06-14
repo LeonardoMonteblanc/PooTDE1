@@ -10,24 +10,61 @@ public class Produto {
     private int qtdEstoque;
     private List<Fornecedor> fornecedores = new ArrayList<>();
     
-    public Produto(int codigo, String desc, double preco) {
-        this.codigo = codigo;
-        this.descricao = desc;
-        this.preco = preco;
-        this.fornecedores = new ArrayList<>();
+    public Produto(int codigo, String desc, double preco, int qtdEstoque) {
+        setCodigo(codigo);
+        setDescricao(desc);
+        setPreco(preco);
+        setEstoque(qtdEstoque);
     }
 
-    public Produto(int codigo, String desc, double p, Fornecedor... fLista) {
-        this(codigo, desc, p);
-        for( Fornecedor f : fLista) {
-            adicionarFornecedor(f);
+    public Produto(int codigo, String desc, double preco, int qtdEstoque, Fornecedor fornecedor) {
+        setCodigo(codigo);
+        setDescricao(desc);
+        setPreco(preco);
+        setEstoque(qtdEstoque);
+        adicionarFornecedor(fornecedor);
+    }
+
+// Metodos fornecedor
+    public void adicionarFornecedor(Fornecedor f) {
+        if(f == null) {
+            throw new IllegalArgumentException("Fornecedor invádlido");
+        }
+
+        if(!fornecedores.contains(f)) {
+            fornecedores.add(f);
         }
     }
 
-    public void adicionarFornecedor(Fornecedor f) {
-        fornecedores.add(f);
+    public void removerFornecedor(Fornecedor f) {
+        fornecedores.remove(f);
     }
 
+    public boolean temFornecedor() {
+        return !fornecedores.isEmpty();
+    }
+
+    public boolean isFornecidoPor(Fornecedor f) {
+        return fornecedores.contains(f);
+    }
+
+    public int getQtdFornecedores() {
+        return fornecedores.size();
+    }
+
+    public String getFornecedoresTexto() {
+        if(fornecedores.isEmpty()) {
+            return " ";
+        }
+        StringBuilder sb = new StringBuilder();
+        for(Fornecedor f: fornecedores) {
+            if(sb.isEmpty()){
+                sb.append(", ");
+            }
+            sb.append(f.getNome());
+        }
+        return sb.toString();
+    }
 
 // GETS ======================================================
     public int getCodigo() {
