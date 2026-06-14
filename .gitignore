@@ -2,3 +2,7 @@ arquivos-privados/
 **/.vscode/
 **/bin/
 *.class
+*.md
+
+back.java
+uml.puml
