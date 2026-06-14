@@ -7,6 +7,7 @@ public class Produto {
     private int codigo;
     private String descricao;
     private double preco;
+    private int qtdEstoque;
     private List<Fornecedor> fornecedores = new ArrayList<>();
     
     public Produto(int codigo, String desc, double preco) {
@@ -41,39 +42,41 @@ public class Produto {
         return preco;
     }
 
+    public int getEstoque() {
+        return qtdEstoque;
+    }
+
     public List<Fornecedor> getFornecedores() {
         return fornecedores;
     }
-
-    public String getFornecedoresTexto() {
-        if (fornecedores.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < fornecedores.size(); i++) {
-            sb.append(fornecedores.get(i).getNome());
-            if (i < fornecedores.size() - 1) {
-                sb.append(", ");
-            }
-        }
-        return sb.toString();
-    }
+    
 // SETS ======================================================
     public void setCodigo(int cod) {
+        if(cod <= 0) {
+            throw new IllegalArgumentException("Codigo inválido para um produto. Escolha um código de 0 a 99999");
+        }
         this.codigo = cod;
     }
 
     public void setDescricao(String desc) {
+        if(desc.isBlank()) {
+            throw new IllegalArgumentException("Descrição do produto nao pode ficar em branco! Insira o nome do produto");
+        }
         this.descricao = desc;
     }
 
     public void setPreco(double preco) {
+        if(preco <= 0) {
+            throw new IllegalArgumentException("O preço não pode ser 0 ou negativo. Insira um preço válido para o produto.");
+        }
         this.preco = preco;
     }
 
-    public void setFornecedores(Fornecedor f) {
-        fornecedores.add(f);
+    public void setEstoque(int qtd) {
+        if(qtd < 0) {
+            throw new IllegalArgumentException("Insira uma quantidade válida para o produto");
+        }
+        this.qtdEstoque = qtd;
     }
 
     @Override 
