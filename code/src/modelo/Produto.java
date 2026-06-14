@@ -54,11 +54,11 @@ public class Produto {
 
     public String getFornecedoresTexto() {
         if(fornecedores.isEmpty()) {
-            return " ";
+            return "";
         }
         StringBuilder sb = new StringBuilder();
         for(Fornecedor f: fornecedores) {
-            if(sb.isEmpty()){
+            if(sb.length() > 0){
                 sb.append(", ");
             }
             sb.append(f.getNome());
@@ -86,7 +86,7 @@ public class Produto {
     public List<Fornecedor> getFornecedores() {
         return fornecedores;
     }
-    
+
 // SETS ======================================================
     public void setCodigo(int cod) {
         if(cod <= 0) {
