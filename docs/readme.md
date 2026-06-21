@@ -6,6 +6,8 @@
   - `/modelo`: entidades do domínio
   - `/controle`: regras e fluxo do sistema
 
+Senha root: (wittgenstein + indepencia do haiti)
+TratadoLogicoFilosofico1804@
 ---
 ### Status do desenvolvimento
 
@@ -40,7 +42,7 @@ src/
 │   ├── Dados.java
 │   ├── Listagem.java
 │   ├── MenuControle.java
-│   └── SistemaControle.java
+│   └── SistemaControle.javaz
 └── modelo/
     ├── Fornecedor.java
     ├── ItemPedido.java
