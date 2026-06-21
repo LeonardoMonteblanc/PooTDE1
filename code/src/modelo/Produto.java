@@ -4,28 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Produto {
-    private int codigo;
+    private Integer codigo;
     private String descricao;
     private double preco;
     private int qtdEstoque;
-    private List<Fornecedor> fornecedores = new ArrayList<>();
+    private List<Fornecedor> fornecedores;
     
-    public Produto(int codigo, String desc, double preco, int qtdEstoque) {
+    public Produto(Integer codigo, String desc, double preco, int qtdEstoque) {
         setCodigo(codigo);
         setDescricao(desc);
         setPreco(preco);
         setEstoque(qtdEstoque);
+        this.fornecedores = new ArrayList<>();
     }
 
-    public Produto(int codigo, String desc, double preco, int qtdEstoque, Fornecedor fornecedor) {
-        setCodigo(codigo);
-        setDescricao(desc);
-        setPreco(preco);
-        setEstoque(qtdEstoque);
-        adicionarFornecedor(fornecedor);
-    }
 
-// Metodos fornecedor
+// FORNECEDOR ======================================================
     public void adicionarFornecedor(Fornecedor f) {
         if(f == null) {
             throw new IllegalArgumentException("Fornecedor invádlido");
@@ -40,30 +34,27 @@ public class Produto {
         fornecedores.remove(f);
     }
 
-    public boolean temFornecedor() {
-        return !fornecedores.isEmpty();
+
+// ESTOQUE ======================================================
+    public boolean temEstoque(int qtd) {
+        return qtd > 0 && qtd <= qtdEstoque;
     }
 
-    public boolean isFornecidoPor(Fornecedor f) {
-        return fornecedores.contains(f);
-    }
-
-    public int getQtdFornecedores() {
-        return fornecedores.size();
-    }
-
-    public String getFornecedoresTexto() {
-        if(fornecedores.isEmpty()) {
-            return "";
+    public void adicionarEstoque(int qtd) {
+        if(qtd <= 0 ){
+            throw new exceptions.EstoqueException("Quantidade invalida.");
         }
-        StringBuilder sb = new StringBuilder();
-        for(Fornecedor f: fornecedores) {
-            if(sb.length() > 0){
-                sb.append(", ");
-            }
-            sb.append(f.getNome());
+        this.qtdEstoque +=qtd;
+    }
+
+    public void diminuirEstoque(int qtd) {
+        if (qtd <= 0) {
+            throw new exceptions.EstoqueException("Quantidade invalida.");
         }
-        return sb.toString();
+        if (qtd > qtdEstoque) {
+            throw new exceptions.EstoqueException("Estoque insuficiente: disponivel " + qtdEstoque + ", solicitado " + qtd);
+        }
+        qtdEstoque -= qtd;
     }
 
 // GETS ======================================================
@@ -84,7 +75,7 @@ public class Produto {
     }
 
     public List<Fornecedor> getFornecedores() {
-        return fornecedores;
+        return new ArrayList<>(this.fornecedores);
     }
 
 // SETS ======================================================

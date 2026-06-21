@@ -1,26 +1,31 @@
 package modelo;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Fornecedor extends Pessoa {
-    private String cnpj;
-    
-    public Fornecedor(int codigo, String nome, String cnpj) {
-        super(codigo, nome);
-        this.cnpj = cnpj;
+    private List<Produto> listaProdutos;
+
+    public Fornecedor(Integer codigo, String nome, String cnpj) {
+        super(codigo, nome, cnpj);
+        this.listaProdutos = new ArrayList<>();
     }
 
 // GETS ======================================================
-    public String getCnpj() {
-        return this.cnpj;
+    public List<Produto> getProdutos() {
+        return new ArrayList<>(this.listaProdutos);
     }
 
 // SETS ======================================================
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void vincularProduto(Produto p) {
+        if(p != null && !this.listaProdutos.contains(p)) {
+            this.listaProdutos.add(p);
+        }
     }
 
-    @Override
-    public String toString() {
-        return String.format("[Fornecedor]: cnpj: %s",cnpj);
+    public void desvincularProduto(Produto p) {
+        if(p != null && !this.listaProdutos.contains(p)) {
+            this.listaProdutos.remove(p);
+        }
     }
 
 }

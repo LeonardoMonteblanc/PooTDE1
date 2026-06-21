@@ -1,12 +1,17 @@
 package modelo;
 
-public abstract class Pessoa {
-    private int codigo;
-    private String nome;
+import java.util.Objects;
 
-    protected Pessoa(int codigo, String nome) {
+public abstract class Pessoa {
+    private String nome;
+    private String doc;
+    private Integer codigo;
+
+    protected Pessoa(Integer codigo, String nome, String doc) {
         this.codigo = codigo;
-        this.nome = nome;
+        this.setNome(nome);
+        this.setDocumento(doc);
+
     }
 
     //GETS
@@ -18,13 +23,51 @@ public abstract class Pessoa {
         return this.nome;
     }
 
-    //SETS
-    public void setCodigo(int codigo) {
-        this.codigo = codigo;
+    public String getDocumento() {
+        return this.doc;
     }
-    
+
+    //SETS
+    public void setCodigo(Integer cod) {
+        this.codigo = cod;
+    }
     public void setNome(String nome) {
+        if(nome.isBlank()) {
+            throw new IllegalArgumentException("Nome não pode estar em branco");
+        }
         this.nome = nome;
+    }
+
+    public void setDocumento(String doc) {
+        if(doc.isBlank()) {
+            throw new IllegalArgumentException("CNPJ/CPF não pode estar em branco");
+        }
+
+        this.doc = doc;
+
+        // #1 Issue (@Vitor)
+        // Incluir validação de CNPJ/CPF? 
+    }
+
+    @Override 
+    public boolean equals(Object ob) {
+        if(this == ob) return true;
+
+        if(ob == null || this.getClass() != ob.getClass()) {
+            return false;
+        }
+
+        Pessoa outPessoa = (Pessoa) ob;
+
+        if(this.codigo != null && outPessoa.codigo !=  null) {
+            return this.codigo.equals(outPessoa.codigo);
+        }
+        return Objects.equals(this.doc,  outPessoa.doc);
+    }
+
+    @Override 
+    public int hashCode() {
+        return Objects.hash(codigo, doc);
     }
 
     @Override
@@ -34,3 +77,4 @@ public abstract class Pessoa {
 
 
 }
+
