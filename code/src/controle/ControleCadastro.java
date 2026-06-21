@@ -1,541 +1,604 @@
 package controle;
 
-import java.util.Scanner;
 import modelo.*;
+import modelo.enums.NivelAcesso;
+import modelo.enums.StatusPedido;
+import banco.*;
+import controle.io.ConsoleOutput;
+import controle.io.Leitor;
+
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
+
 
 public class ControleCadastro {
-    private SistemaControle sistema;
-    private Scanner scanner;
-    private Listagem listagem;
 
-    public ControleCadastro(SistemaControle sistema, Scanner scanner) {
-        this.sistema = sistema;
-        this.scanner = scanner;
-        this.listagem = new Listagem(sistema);
+    private final ProdutoDAO produtoDAO;
+    private final FornecedorDAO fornecedorDAO;
+    private final TransportadoraDAO transportadoraDAO;
+    private final UsuarioDAO usuarioDAO;
+    private final PedidoDAO pedidoDAO;
+    private final RemessaDAO remessaDAO;
+    private final ItemPedidoDAO itemPedidoDAO;
+    private final ConsoleOutput out;
+    private final Leitor leitor;
+
+    // Carrinho da sessão (para o cliente logado)
+    private Carrinho carrinho;
+
+    public ControleCadastro(ProdutoDAO prod, FornecedorDAO f, TransportadoraDAO t,UsuarioDAO u, PedidoDAO p, RemessaDAO r, ItemPedidoDAO i,ConsoleOutput out, Leitor leitor) {
+        this.produtoDAO = prod;
+        this.fornecedorDAO = f;
+        this.transportadoraDAO = t;
+        this.usuarioDAO = u;
+        this.pedidoDAO = p;
+        this.remessaDAO = r;
+        this.itemPedidoDAO = i;
+        this.out = out;
+        this.leitor = leitor;
+        this.carrinho = new Carrinho(); 
     }
 
-    // ========== PRODUTOS ==========
-    public void cadastrarProduto() {
-        System.out.println("=== Cadastrar Produto ===");
-        System.out.println("Código: ");
-        int cod = lerInt();
-        System.out.println("Descrição: ");
-        String desc = lerLinha();
-        System.out.println("Preço: ");
-        String precoStr = lerLinha().replace(",", ".");
-        double preco = Double.parseDouble(precoStr);
-        Produto novoProd = new Produto(cod, desc, preco);
-        listagem.listarFornecedores();
-
-        System.out.println("Digite o codigo do fornecedor: ");
-        int codFornecedor = lerInt();
-
-        // Vincula só um fornecedor por produto
-        if (codFornecedor != 0) {
-            Fornecedor fornecedor = sistema.getFornecedorByCodigo(codFornecedor);
-            if (fornecedor == null) {
-                System.out.println("Fornecedor não encontrado");
-            } else {
-                novoProd.adicionarFornecedor(fornecedor);
-                System.out.println("Fornecedor vinculado");
-            }
-        }
-
-        sistema.getProdutos().add(novoProd);
-        System.out.println("✓ Produto cadastrado!");
-    }
-
-    public void alterarProduto() {
-        System.out.println("=== Alterar Produto ===");
-        System.out.println("Código do produto a alterar: ");
-        int cod = lerInt();
-
-        Produto produto = sistema.getProdutoByCodigo(cod);
-
-        if (produto == null) {
-            System.out.println("✗ Produto não encontrado!");
+    public void cadastrarProduto(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado. Apenas administradores podem cadastrar produtos.");
             return;
         }
 
-        System.out.println("Descrição (atual: " + produto.getDescricao() + "): ");
-        String desc = lerLinha();
-        if (!desc.isEmpty()) {
-            produto.setDescricao(desc);
-        }
+        try {
+            int codigo = leitor.inteiro("Código do produto: ");
 
-        System.out.println("Preço (atual: " + produto.getPreco() + "): ");
-        String precoStr = lerLinha().replace(",", ".");
-        if (!precoStr.isEmpty()) {
-            produto.setPreco(Double.parseDouble(precoStr));
-        }
-
-        System.out.println("✓ Produto alterado!");
-    }
-
-    public void excluirProduto() {
-        System.out.println("=== Excluir Produto ===");
-        System.out.println("Código do produto a excluir: ");
-        int cod = lerInt();
-
-        Produto produto = sistema.getProdutoByCodigo(cod);
-
-        if (produto == null) {
-            System.out.println("✗ Produto não encontrado!");
-            return;
-        }
-
-        sistema.getProdutos().remove(produto);
-        System.out.println("✓ Produto excluído!");
-    }
-
-    // ========== FORNECEDORES ==========
-    public void cadastrarFornecedor() {
-        System.out.println("=== Cadastrar Fornecedor ===");
-        System.out.println("Código: ");
-        int cod = lerInt();
-        System.out.println("Nome: ");
-        String nome = lerLinha();
-        System.out.println("CNPJ: ");
-        String cnpj = lerLinha();
-        Fornecedor novoFor = new Fornecedor(cod, nome, cnpj);
-        sistema.getFornecedores().add(novoFor);
-        System.out.println("✓ Fornecedor cadastrado!");
-    }
-
-    public void alterarFornecedor() {
-        System.out.println("=== Alterar Fornecedor ===");
-        System.out.println("Código do fornecedor a alterar: ");
-        int cod = lerInt();
-
-        Fornecedor fornecedor = sistema.getFornecedorByCodigo(cod);
-
-        if (fornecedor == null) {
-            System.out.println("✗ Fornecedor não encontrado!");
-            return;
-        }
-
-        System.out.println("Nome (atual: " + fornecedor.getNome() + "): ");
-        String nome = lerLinha();
-        if (!nome.isEmpty()) {
-            fornecedor.setNome(nome);
-        }
-
-        System.out.println("CNPJ (atual: " + fornecedor.getCnpj() + "): ");
-        String cnpj = lerLinha();
-        if (!cnpj.isEmpty()) {
-            fornecedor.setCnpj(cnpj);
-        }
-
-        System.out.println("✓ Fornecedor alterado!");
-    }
-
-    public void excluirFornecedor() {
-        System.out.println("=== Excluir Fornecedor ===");
-        System.out.println("Código do fornecedor a excluir: ");
-        int cod = lerInt();
-
-        Fornecedor fornecedor = sistema.getFornecedorByCodigo(cod);
-
-        if (fornecedor == null) {
-            System.out.println("✗ Fornecedor não encontrado!");
-            return;
-        }
-
-        sistema.getFornecedores().remove(fornecedor);
-        System.out.println("✓ Fornecedor excluído!");
-    }
-
-    // ========== USUÁRIOS ==========
-    public void cadastrarUsuario() {
-        System.out.println("=== Cadastrar Usuário ===");
-        System.out.println("Código: ");
-        int cod = lerInt();
-        System.out.println("Nome: ");
-        String nome = lerLinha();
-        System.out.println("Login: ");
-        String login = lerLinha();
-        System.out.println("Senha: ");
-        String senha = lerLinha();
-        System.out.println("Nível de acesso (ADMIN/CLIENTE): ");
-        String nivel = lerLinha().toUpperCase();
-        NivelAcesso nivelAcesso = NivelAcesso.valueOf(nivel);
-        Usuario novoUser = new Usuario(cod, nome, login, senha, nivelAcesso);
-        sistema.getUsuarios().add(novoUser);
-        System.out.println("✓ Usuário cadastrado!");
-    }
-
-    public void alterarUsuario() {
-        System.out.println("=== Alterar Usuário ===");
-        System.out.println("Código do usuário a alterar: ");
-        int cod = lerInt();
-
-        Usuario usuario = sistema.getUsuarioByCodigo(cod);
-
-        if (usuario == null) {
-            System.out.println("✗ Usuário não encontrado!");
-            return;
-        }
-
-        System.out.println("Nome (atual: " + usuario.getNome() + "): ");
-        String nome = lerLinha();
-        if (!nome.isEmpty()) {
-            usuario.setNome(nome);
-        }
-
-        System.out.println("Login (atual: " + usuario.getLogin() + "): ");
-        String login = lerLinha();
-        if (!login.isEmpty()) {
-            usuario.setLogin(login);
-        }
-
-        System.out.println("Senha (atual: " + usuario.getSenha() + "): ");
-        String senha = lerLinha();
-        if (!senha.isEmpty()) {
-            usuario.setSenha(senha);
-        }
-
-        System.out.println("Nível de acesso (atual: " + usuario.getNivelAcesso() + ") - (ADMIN/CLIENTE): ");
-        String nivel = lerLinha().toUpperCase();
-        if (!nivel.isEmpty()) {
-            usuario.setNivelAcesso(NivelAcesso.valueOf(nivel));
-        }
-
-        System.out.println("✓ Usuário alterado!");
-    }
-
-    public void excluirUsuario() {
-        System.out.println("=== Excluir Usuário ===");
-        System.out.println("Código do usuário a excluir: ");
-        int cod = lerInt();
-
-        Usuario usuario = sistema.getUsuarioByCodigo(cod);
-
-        if (usuario == null) {
-            System.out.println("✗ Usuário não encontrado!");
-            return;
-        }
-
-        sistema.getUsuarios().remove(usuario);
-        System.out.println("✓ Usuário excluído!");
-    }
-
-    // ========== TRANSPORTADORAS ==========
-    public void cadastrarTransportadora() {
-        System.out.println("=== Cadastrar Transportadora ===");
-        System.out.println("Código: ");
-        int cod = lerInt();
-        System.out.println("Nome: ");
-        String nome = lerLinha();
-        Transportadora novaTransp = new Transportadora(cod, nome);
-        sistema.getTransportadora().add(novaTransp);
-        System.out.println("✓ Transportadora cadastrada!");
-    }
-
-    public void alterarTransportadora() {
-        System.out.println("=== Alterar Transportadora ===");
-        System.out.println("Código da transportadora a alterar: ");
-        int cod = lerInt();
-
-        Transportadora transportadora = sistema.getTransportadoraByCodigo(cod);
-
-        if (transportadora == null) {
-            System.out.println("✗ Transportadora não encontrada!");
-            return;
-        }
-
-        System.out.println("Nome (atual: " + transportadora.getNome() + "): ");
-        String nome = lerLinha();
-        if (!nome.isEmpty()) {
-            transportadora.setNome(nome);
-        }
-
-        System.out.println("✓ Transportadora alterada!");
-    }
-
-    public void excluirTransportadora() {
-        System.out.println("=== Excluir Transportadora ===");
-        System.out.println("Código da transportadora a excluir: ");
-        int cod = lerInt();
-
-        Transportadora transportadora = sistema.getTransportadoraByCodigo(cod);
-
-        if (transportadora == null) {
-            System.out.println("✗ Transportadora não encontrada!");
-            return;
-        }
-
-        sistema.getTransportadora().remove(transportadora);
-        System.out.println("✓ Transportadora excluída!");
-    }
-
-    // ========== REMESSAS ==========
-    public void alterarRemessa() {
-        System.out.println("=== Alterar Remessa ===");
-        System.out.println("Código da remessa a alterar: ");
-        int cod = lerInt();
-
-        Remessa remessa = sistema.getRemessaByCodigo(cod);
-
-        if (remessa == null) {
-            System.out.println("✗ Remessa não encontrada!");
-            return;
-        }
-
-        System.out.println("Código da transportadora (atual: " + remessa.getTransportadora().getCodigo() + "): ");
-        String transpStr = lerLinha();
-        if (!transpStr.isEmpty()) {
-            int codTransp = Integer.parseInt(transpStr);
-            Transportadora transp = sistema.getTransportadoraByCodigo(codTransp);
-            if (transp != null) {
-                remessa.setTransportadora(transp);
-            }
-        }
-
-        System.out.println("✓ Remessa alterada!");
-    }
-
-    public void excluirRemessa() {
-        System.out.println("=== Excluir Remessa ===");
-        System.out.println("Código da remessa a excluir: ");
-        int cod = lerInt();
-
-        Remessa remessa = sistema.getRemessaByCodigo(cod);
-
-        if (remessa == null) {
-            System.out.println("✗ Remessa não encontrada!");
-            return;
-        }
-
-        sistema.getRemessas().remove(remessa);
-        System.out.println("✓ Remessa excluída!");
-    }
-
-    // ========== PEDIDOS ==========
-    public void alterarPedido() {
-        System.out.println("=== Alterar Pedido ===");
-        listagem.listarPedidos();
-
-        System.out.println("Código do pedido a alterar: ");
-        int codPedido = lerInt();
-
-        Pedido pedido = sistema.getPedidoByCodigo(codPedido);
-        if (pedido == null) {
-            System.out.println("✗ Pedido não encontrado!");
-            return;
-        }
-
-        boolean editando = true;
-        while (editando) {
-            System.out.println("\n--- Itens atuais ---");
-            listagem.imprimirItensPedido(pedido.getItens());
-            System.out.println("\n1. Adicionar item");
-            System.out.println("2. Remover item");
-            System.out.println("3. Alterar quantidade de um item");
-            System.out.println("0. Finalizar alteração");
-            int opcao = lerInt();
-
-            switch (opcao) {
-                case 1:
-                    listagem.listarProdutos();
-                    System.out.println("Código do produto: ");
-                    int codProd = lerInt();
-                    Produto produto = sistema.getProdutoByCodigo(codProd);
-                    if (produto == null) {
-                        System.out.println("✗ Produto não encontrado!");
-                        break;
-                    }
-                    System.out.println("Quantidade: ");
-                    int qtd = lerInt();
-                    pedido.adicionarItem(produto, qtd);
-                    System.out.println("✓ Item adicionado!");
-                    break;
-                case 2:
-                    System.out.println("Código do produto a remover: ");
-                    int codRemover = lerInt();
-                    Produto prodRemover = sistema.getProdutoByCodigo(codRemover);
-                    if (prodRemover == null) {
-                        System.out.println("✗ Produto não encontrado!");
-                        break;
-                    }
-                    pedido.removerItem(prodRemover);
-                    System.out.println("✓ Item removido!");
-                    break;
-                case 3:
-                    System.out.println("Código do produto a alterar quantidade: ");
-                    int codAlterar = lerInt();
-                    ItemPedido itemAlterar = pedido.getItemByCodigoProduto(codAlterar);
-                    if (itemAlterar == null) {
-                        System.out.println("✗ Item não encontrado no pedido!");
-                        break;
-                    }
-                    System.out.println("Nova quantidade (atual: " + itemAlterar.getQuantidade() + "): ");
-                    int novaQtd = lerInt();
-                    itemAlterar.setQuantidade(novaQtd);
-                    System.out.println("✓ Quantidade alterada!");
-                    break;
-                case 0:
-                    editando = false;
-                    break;
-                default:
-                    System.out.println("Opcao inválida!");
-            }
-        }
-
-        System.out.println("✓ Pedido alterado!");
-    }
-
-    public void excluirPedido() {
-        System.out.println("=== Excluir Pedido ===");
-        listagem.listarPedidos();
-
-        System.out.println("Código do pedido a excluir: ");
-        int codPedido = lerInt();
-
-        Pedido pedido = sistema.getPedidoByCodigo(codPedido);
-        if (pedido == null) {
-            System.out.println("✗ Pedido não encontrado!");
-            return;
-        }
-
-        sistema.removerPedidoDeTodasRemessas(pedido);
-        System.out.println("✓ Pedido excluído!");
-    }
-
-    public void cadastrarPedido() {
-        System.out.println("=== Fazer Pedido ===");
-        Pedido pedido = new Pedido(sistema.geraCodigoPedido());
-        boolean addProduto = true;
-
-        while (addProduto) {
-            listagem.listarProdutos();
-            System.out.println("Digite o código do produto (ou 0 para finalizar): ");
-            int codigoProduto = lerInt();
-
-            if (codigoProduto == 0) {
-                addProduto = false;
-                continue;
+            if (produtoDAO.buscarPorCodigo(codigo) != null) {
+                System.out.println("Já existe produto com este código.");
+                return;
             }
 
-            Produto produtoSelecionado = sistema.getProdutoByCodigo(codigoProduto);
-            if (produtoSelecionado == null) {
-                System.out.println("Produto não encontrado");
-                continue;
+            String descricao = leitor.linha("Descrição: ");
+            double preco = leitor.real("Preço: ");
+            int estoque = leitor.inteiro("Estoque inicial: ");
+
+            Produto produto = new Produto(codigo, descricao, preco, estoque);
+
+            String associar = leitor.linha("Deseja associar a um fornecedor? (S/N): ");
+
+            if (associar.equalsIgnoreCase("S")) {
+                int idFornecedor = leitor.inteiro("Código do fornecedor: ");
+
+                Fornecedor fornecedor = fornecedorDAO.buscarPorCodigo(idFornecedor);
+
+                if (fornecedor != null) {
+                    produto.adicionarFornecedor(fornecedor);
+                } else {
+                    System.out.println("Fornecedor não encontrado.");
+                }
             }
 
-            System.out.println("Produto: " + produtoSelecionado.getDescricao() + "= R$ " + String.format("%.2f", produtoSelecionado.getPreco()));
-            System.out.println("Digite a quantidade: ");
-            int quantidade = lerInt();
+            produtoDAO.salvar(produto);
+            System.out.println("Produto cadastrado com sucesso!");
 
-            pedido.adicionarItem(produtoSelecionado, quantidade);
-            System.out.println("Item adicionado");
+        } catch (SQLException e) {
+            System.err.println("Erro ao cadastrar produto: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Dados inválidos: " + e.getMessage());
         }
-
-        if (pedido.getItens().isEmpty()) {
-            System.out.println("✗ Pedido sem itens! Pedido não criado.");
-            return;
-        }
-
-        System.out.println("=== Resumo do Pedido ===");
-        listagem.imprimirItensPedido(pedido.getItens());
-
-        double total = 0;
-        for (ItemPedido item : pedido.getItens()) {
-            total += item.getQuantidade() * item.getProduto().getPreco();
-        }
-        System.out.printf("Total: R$ %.2f%n", total);
-
-        listagem.listarTransportadoras();
-        System.out.println("Digite o código da transportadora (codigo): ");
-        int codigoTransp = lerInt();
-
-        Transportadora transportadora = sistema.getTransportadoraByCodigo(codigoTransp);
-        if (transportadora == null) {
-            System.out.println("transportadora nao encontrada");
-            return;
-        }
-
-        Remessa remessa = new Remessa(sistema.geraCodigoRemessa(), transportadora, sistema.getUsuarioLogado());
-        remessa.adicionarPedido(pedido);
-        sistema.getRemessas().add(remessa);
-
-        System.out.println("Pedido #" + pedido.getCodigo() + " incluido com sucesso!");
     }
 
-    // ========== CADASTRO DE REMESSAS COM PEDIDOS ==========
-    public void cadastrarRemessaComPedido() {
-        System.out.println("=== Cadastrar Remessa com Pedido ===");
-        int codRemessa = sistema.geraCodigoRemessa();
-        System.out.println("Código da remessa gerado: " + codRemessa);
+    //3# issue
+    // @Vitor == exception de cadstro
+    // @ exception de alteração
 
-        System.out.println("Código da transportadora: ");
-        int codTransp = lerInt();
-
-        Transportadora transportadora = sistema.getTransportadoraByCodigo(codTransp);
-
-        if (transportadora == null) {
-            System.out.println("✗ Transportadora não encontrada!");
+    public void alterarProduto(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado. Apenas administradores podem alterar produtos.");
             return;
         }
 
-        System.out.println("Código do cliente (usuário): ");
-        int codCliente = lerInt();
-
-        Usuario cliente = sistema.getUsuarioByCodigo(codCliente);
-
-        if (cliente == null) {
-            System.out.println("✗ Cliente não encontrado!");
-            return;
-        }
-
-        // Criar remessa
-        Remessa novaRemessa = new Remessa(codRemessa, transportadora, cliente);
-        Pedido novoPedido = new Pedido(sistema.geraCodigoPedido());
-
-        // Adicionar itens ao pedido
-        boolean adicionarMais = true;
-        listagem.listarProdutos();
-        while (adicionarMais) {
-            System.out.println("\n--- Adicionar Item ao Pedido ---");
-            System.out.println("Código do produto (ou 0 para finalizar): ");
-            int codProduto = lerInt();
-
-            if (codProduto == 0) {
-                adicionarMais = false;
-                break;
+        try {
+            int codigo = leitor.inteiro("Código do produto a alterar: ");
+            Produto p = produtoDAO.buscarPorCodigo(codigo);
+            if (p == null) {
+                System.out.println("Produto não encontrado.");
+                return;
             }
 
-            Produto produto = sistema.getProdutoByCodigo(codProduto);
+            out.exibirProduto(p); 
 
+            String descricao = leitor.linha("Nova descrição (deixe em branco para manter): ");
+            if (!descricao.isEmpty()) {
+                p.setDescricao(descricao);
+            }
+
+            String precoStr = leitor.linha("Novo preço (deixe em branco para manter): ");
+            if (!precoStr.isEmpty()) {
+                double preco = Double.parseDouble(precoStr);
+                p.setPreco(preco);
+            }
+
+            String estoqueStr = leitor.linha("Novo estoque (deixe em branco para manter): ");
+            if (!estoqueStr.isEmpty()) {
+                int estoque = Integer.parseInt(estoqueStr);
+                p.setEstoque(estoque);
+            }
+
+            produtoDAO.atualizar(p);
+            System.out.println("Produto alterado com sucesso!");
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao alterar produto: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Valor numérico inválido.");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Dados inválidos: " + e.getMessage());
+        }
+    }
+
+    public void cadastrarFornecedor(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+            int codigo = leitor.inteiro("Código do fornecedor: ");
+
+            if (fornecedorDAO.buscarPorCodigo(codigo) != null) {
+                System.out.println("Código já existe.");
+                return;
+            }
+
+            String nome = leitor.linha("Nome: ");
+            String cnpj = leitor.linha("CNPJ: ");
+            Fornecedor f = new Fornecedor(codigo, nome, cnpj);
+            fornecedorDAO.salvar(f);
+            System.out.println("Fornecedor cadastrado.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+    public void alterarFornecedor(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+            int codigo = leitor.inteiro("Código do fornecedor a alterar: ");
+            Fornecedor f = fornecedorDAO.buscarPorCodigo(codigo);
+
+            if (f == null) {
+                System.out.println("Fornecedor não encontrado.");
+                return;
+            }
+
+            out.exibirFornecedor(f);
+            String nome = leitor.linha("Novo nome (deixe em branco para manter): ");
+
+            if (!nome.isEmpty()) {
+                f.setNome(nome);
+            }
+
+            String cnpj = leitor.linha("Novo CNPJ (deixe em branco para manter): ");
+            if (!cnpj.isEmpty()) {
+                f.setDocumento(cnpj);
+            }
+
+            fornecedorDAO.atualizar(f);
+            System.out.println("Fornecedor alterado.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+    public void cadastrarTransportadora(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+            int codigo = leitor.inteiro("Código da transportadora: ");
+
+            if (transportadoraDAO.buscarPorCodigo(codigo) != null) {
+                System.out.println("Código já existe.");
+                return;
+            }
+
+            String nome = leitor.linha("Nome: ");
+            String cnpj = leitor.linha("CNPJ: ");
+            double taxa = leitor.real("Taxa de frete: ");
+            Transportadora t = new Transportadora(codigo, nome, cnpj, taxa);
+            transportadoraDAO.salvar(t);
+
+            System.out.println("Transportadora cadastrada.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+    public void alterarTransportadora(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+
+        try {
+            int codigo = leitor.inteiro("Código da transportadora a alterar: ");
+            Transportadora t = transportadoraDAO.buscarPorCodigo(codigo);
+            if (t == null) {
+                System.out.println("Transportadora não encontrada.");
+                return;
+            }
+
+            out.exibirTransportadora(t);
+            String nome = leitor.linha("Novo nome (deixe em branco para manter): ");
+
+            if (!nome.isEmpty()) {
+                t.setNome(nome);
+            }
+
+            String taxaStr = leitor.linha("Nova taxa (deixe em branco para manter): ");
+
+            if (!taxaStr.isEmpty()) {
+                double taxa = Double.parseDouble(taxaStr);
+                t.setTaxaFrete(taxa);
+            }
+
+            transportadoraDAO.atualizar(t);
+            System.out.println("Transportadora alterada.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+    public void cadastrarUsuario(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+
+        try {
+            int codigo = leitor.inteiro("Código do usuário: ");
+
+            if (usuarioDAO.buscarPorCodigo(codigo) != null) {
+                System.out.println("Código já existe.");
+                return;
+            }
+
+            String nome = leitor.linha("Nome: ");
+            String documento = leitor.linha("CPF: ");
+            String login = leitor.linha("Login: ");
+
+            if (usuarioDAO.buscarPorLogin(login) != null) {
+                System.out.println("Login já utilizado.");
+                return;
+            }
+
+            String senha = leitor.linha("Senha: ");
+            String nivelStr = leitor.linha("Nível (ADMIN/CLIENTE): ");
+            NivelAcesso nivel = NivelAcesso.valueOf(nivelStr.toUpperCase());
+            Usuario u = new Usuario(codigo, nome, documento, login, senha, nivel);
+
+            usuarioDAO.salvar(u);
+            System.out.println("Usuário cadastrado.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Nível inválido.");
+        }
+    }
+
+    public void alterarUsuario(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+
+            int codigo = leitor.inteiro("Código do usuário a alterar: ");
+            Usuario u = usuarioDAO.buscarPorCodigo(codigo);
+
+            if (u == null) {
+                System.out.println("Usuário não encontrado.");
+                return;
+            }
+            out.exibirUsuario(u);
+            String nome = leitor.linha("Novo nome (deixe em branco para manter): ");
+
+            if (!nome.isEmpty()){
+                u.setNome(nome);
+            }
+
+            String login = leitor.linha("Novo login (deixe em branco para manter): ");
+            if (!login.isEmpty() && !login.equals(u.getLogin())) {
+                if (usuarioDAO.buscarPorLogin(login) != null) {
+                    System.out.println("Login já utilizado.");
+                } else {
+                    u.setLogin(login);
+                }
+            }
+
+            String senha = leitor.linha("Nova senha (deixe em branco para manter): ");
+
+            if (!senha.isEmpty()) {
+                u.setSenha(senha);
+            }
+
+            String nivelStr = leitor.linha("Novo nível (deixe em branco para manter): ");
+
+            if (!nivelStr.isEmpty()) {
+                u.setNivelAcesso(NivelAcesso.valueOf(nivelStr.toUpperCase()));
+            }
+
+            usuarioDAO.atualizar(u);
+            System.out.println("Usuário alterado.");
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+
+    public void iniciarCarrinho(Usuario cliente) {
+        if (!isCliente(cliente)) {
+            System.out.println("Apenas clientes podem usar o carrinho.");
+            return;
+        }
+        this.carrinho = new Carrinho();
+        System.out.println("Carrinho iniciado.");
+    }
+
+    public void adicionarItemAoCarrinho(Usuario cliente) {
+        if (!isCliente(cliente) || carrinho == null) {
+            System.out.println("Carrinho não iniciado ou usuário inválido.");
+            return;
+        }
+        try {
+            int codProduto = leitor.inteiro("Código do produto: ");
+            Produto produto = produtoDAO.buscarPorCodigo(codProduto);
             if (produto == null) {
-                System.out.println("✗ Produto não encontrado!");
-                continue;
+                System.out.println("Produto não encontrado.");
+                return;
             }
 
-            System.out.println("Quantidade: ");
-            int quantidade = lerInt();
+            int quantidade = leitor.inteiro("Quantidade: ");
+            carrinho.adicionarItemCarrinho(produto, quantidade);
+            System.out.println("Item adicionado ao carrinho.");
 
-            novoPedido.adicionarItem(produto, quantidade);
-            System.out.println("✓ Item adicionado: " + produto.getDescricao() + " (qtd: " + quantidade + ")");
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar produto: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro: " + e.getMessage());
         }
+    }
 
-        if (novoPedido.getItens().isEmpty()) {
-            System.out.println("✗ Pedido sem itens! Remessa não criada.");
+    public void removerItemDoCarrinho(Usuario cliente) {
+        if (!isCliente(cliente) || carrinho == null || carrinho.getItens().isEmpty()) {
+            System.out.println("Carrinho vazio ou não iniciado.");
+            return;
+        }
+        try {
+            int codProduto = leitor.inteiro("Código do produto a remover: ");
+            Produto produto = produtoDAO.buscarPorCodigo(codProduto);
+            if (produto == null) {
+                System.out.println("Produto não encontrado.");
+                return;
+            }
+            carrinho.removerItem(produto); 
+            System.out.println("Item removido.");
+
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+    public void visualizarCarrinho(Usuario cliente) {
+        if (!isCliente(cliente) || carrinho == null || carrinho.getItens().isEmpty()) {
+            System.out.println("Carrinho vazio.");
             return;
         }
 
-        // Adicionar pedido à remessa e remessa ao sistema
-        novaRemessa.adicionarPedido(novoPedido);
-        sistema.getRemessas().add(novaRemessa);
-        System.out.println("✓ Remessa cadastrada com sucesso! Código: " + codRemessa);
+        System.out.println("--- CARRINHO ---");
+        for (ItemPedido item : carrinho.getItens()) {
+            System.out.printf("  %s | Qtd: %d | Subtotal: R$ %.2f%n",
+                    item.getProduto().getDescricao(),
+                    item.getQuantidade(),
+                    item.getSubTotal());
+        }
+        System.out.printf("Total: R$ %.2f%n", carrinho.calcularTotal());
     }
 
-    private int lerInt() {
-        int valor = scanner.nextInt();
-        scanner.nextLine();
-        return valor;
+
+    public void finalizarCarrinho(Usuario cliente) {
+        if (!isCliente(cliente) || carrinho == null || carrinho.getItens().isEmpty()) {
+            System.out.println("Carrinho vazio ou não iniciado.");
+            return;
+        }
+
+        try {
+            Pedido pedido = new Pedido(cliente);
+            pedido.concluirPedido(carrinho); 
+
+            listarTransportadoras();
+            int codTransp = leitor.inteiro("Código da transportadora: ");
+            Transportadora transp = transportadoraDAO.buscarPorCodigo(codTransp);
+
+            if (transp == null) {
+                System.out.println("Transportadora inválida. Pedido cancelado.");
+                
+                for (ItemPedido item : pedido.getItens()) {
+                    item.getProduto().adicionarEstoque(item.getQuantidade());
+                    produtoDAO.atualizar(item.getProduto());
+                }
+                return;
+            }
+
+            Remessa remessa = new Remessa(transp);
+            remessa.adicionarPedido(pedido);
+
+            pedidoDAO.salvar(pedido);
+            for (ItemPedido item : pedido.getItens()) {
+                itemPedidoDAO.salvar(item, pedido.getCodigo());
+            }
+
+            for (ItemPedido item : pedido.getItens()) {
+                produtoDAO.atualizar(item.getProduto());
+            }
+            remessaDAO.salvar(remessa);
+            pedidoDAO.atualizarRemessaEFrete(pedido.getCodigo(), remessa.getCodigo(), pedido.getValorFrete());
+
+
+            System.out.println("Pedido #" + pedido.getCodigo() + " finalizado com sucesso!");
+            out.exibirPedido(pedido);
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao finalizar pedido: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
     }
 
-    private String lerLinha() {
-        return scanner.nextLine();
+
+    public void alterarStatusPedido(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+            int codigo = leitor.inteiro("Código do pedido: ");
+            Pedido pedido = pedidoDAO.buscarPorCodigo(codigo);
+            if (pedido == null) {
+                System.out.println("Pedido não encontrado.");
+                return;
+            }
+            out.exibirPedido(pedido);
+            System.out.println("Novo status (ENVIADO / CANCELADO): ");
+            String novoStatus = leitor.linha("").toUpperCase();
+
+            if (novoStatus.equals("ENVIADO")) {
+                pedido.enviarPedido();
+                pedidoDAO.atualizar(pedido);
+                System.out.println("Pedido enviado com sucesso.");
+            } else if (novoStatus.equals("CANCELADO")) {
+                pedido.cancelarPedido(); 
+                pedidoDAO.atualizar(pedido);
+                for (ItemPedido item : pedido.getItens()) {
+                    produtoDAO.atualizar(item.getProduto());
+                }
+                System.out.println("Pedido cancelado.");
+            } else {
+                System.out.println("Status inválido.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        } catch (IllegalStateException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+    public void cadastrarRemessa(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+            List<Pedido> pedidosDisponiveis = pedidoDAO.listarPorStatus(StatusPedido.EM_PROCESSAMENTO);
+            if (pedidosDisponiveis.isEmpty()) {
+                System.out.println("Nenhum pedido disponível para remessa.");
+                return;
+            }
+            System.out.println("Pedidos disponíveis:");
+            for (Pedido p : pedidosDisponiveis) {
+                System.out.printf("  #%d - Cliente: %s%n", p.getCodigo(), p.getCliente().getNome());
+            }
+
+            String pedidosSelecionados = leitor.linha("Códigos dos pedidos (separados por vírgula): ");
+            String[] codigos = pedidosSelecionados.split(",");
+
+            listarTransportadoras();
+            int codTransp = leitor.inteiro("Código da transportadora: ");
+            Transportadora transp = transportadoraDAO.buscarPorCodigo(codTransp);
+            if (transp == null) {
+                System.out.println("Transportadora inválida.");
+                return;
+            }
+
+            Remessa remessa = new Remessa(transp);
+            for (String codStr : codigos) {
+                int codPed = Integer.parseInt(codStr.trim());
+                Pedido ped = pedidoDAO.buscarPorCodigo(codPed);
+                if (ped != null && ped.getStatus() == StatusPedido.EM_PROCESSAMENTO) {
+                    remessa.adicionarPedido(ped);
+                }
+            }
+            if (remessa.getPedidos().isEmpty()) {
+                System.out.println("Nenhum pedido válido selecionado.");
+                return;
+            }
+
+            remessaDAO.salvar(remessa);
+
+            for (Pedido p : remessa.getPedidos()) {
+                pedidoDAO.atualizarRemessaEFrete(p.getCodigo(), remessa.getCodigo(), p.getValorFrete());
+            }
+            System.out.println("Remessa criada com sucesso.");
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Código inválido.");
+        }
+    }
+
+    public void alterarRemessa(Usuario adminLogado) {
+        if (!isAdmin(adminLogado)) {
+            System.out.println("Acesso negado.");
+            return;
+        }
+        try {
+            int codRemessa = leitor.inteiro("Código da remessa a alterar: ");
+            Remessa remessa = remessaDAO.buscarPorCodigo(codRemessa);
+            if (remessa == null) {
+                System.out.println("Remessa não encontrada.");
+                return;
+            }
+            out.exibirRemessa(remessa); 
+            listarTransportadoras();
+            int codTransp = leitor.inteiro("Nova transportadora: ");
+            Transportadora nova = transportadoraDAO.buscarPorCodigo(codTransp);
+            if (nova == null) {
+                System.out.println("Transportadora inválida.");
+                return;
+            }
+
+            for (Pedido p : remessa.getPedidos()) {
+                p.setFrete(nova.getTaxaFrete());
+                pedidoDAO.atualizar(p); 
+            }
+            remessa.setTransportadora(nova);
+            remessaDAO.atualizar(remessa);
+            System.out.println("Remessa alterada.");
+        } catch (SQLException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
+
+    private boolean isAdmin(Usuario usuario) {
+        return usuario != null && usuario.getNivelAcesso() == NivelAcesso.ADMIN;
+    }
+
+    private boolean isCliente(Usuario usuario) {
+        return usuario != null && usuario.getNivelAcesso() == NivelAcesso.CLIENTE;
+    }
+
+    private void listarTransportadoras() {
+        try {
+            List<Transportadora> lista = transportadoraDAO.listarTodos();
+            out.exibirListaTransportadoras(lista);
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar transportadoras.");
+        }
     }
 }
