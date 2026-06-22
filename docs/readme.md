@@ -63,3 +63,5 @@ src/
 
 ```
 
+![](https://github.com/LeonardoMonteblanc/PooTDE1/blob/master/docs/diagram.png)
+
