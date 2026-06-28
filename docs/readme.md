@@ -6,6 +6,11 @@
   - `/modelo`: entidades do domínio
   - `/controle`: regras e fluxo do sistema
 
+CONSULTAS OK
+CADASTROS OK
+FAZER PEDIDO E REMESSA COM PROBLEMAS
+
+
 Senha root: (wittgenstein + indepencia do haiti)
 TratadoLogicoFilosofico1804@
 ---

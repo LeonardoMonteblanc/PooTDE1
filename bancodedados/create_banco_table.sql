@@ -89,3 +89,4 @@ CREATE TABLE item_carrinho (
     FOREIGN KEY (produto_id) REFERENCES produto(id)
 );
 
+

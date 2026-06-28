@@ -18,7 +18,7 @@ public class ConsoleOutput {
     }
 
     public void exibirProduto(Produto p) {
-        System.out.printf("%-6s | %-40s | %-10s | %-6s | %-30s%n","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE", "FORNECEDOR");
+        System.out.printf("%-6s | %-40s | %-10s | %-6s | %-30s","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE", "FORNECEDOR");
 
         exibirLinhaSeparadora(90);
         
@@ -50,21 +50,19 @@ public class ConsoleOutput {
 
 
     public void exibirItemPedido(ItemPedido item) {
-        System.out.printf("   %-40s | %6d | %10s | %10s%n", item.getProduto().getDescricao(), item.getQuantidade(), String.format("R$ %.2f", item.getProduto().getPreco()),String.format("R$ %.2f", item.getSubTotal()));
+        System.out.printf("%-40s | %6d | %10s | %10s%n", item.getProduto().getDescricao(), item.getQuantidade(), String.format("R$ %.2f", item.getProduto().getPreco()),String.format("R$ %.2f", item.getSubTotal()));
 }
 
 
     public void exibirPedido(Pedido p) {
-        System.out.printf("%-8s | %-30s | %-15s | %-20s%n",
-                "NÚMERO", "CLIENTE", "STATUS", "DATA");
+        System.out.printf("%-8s | %-30s | %-15s | %-20s%n","NÚMERO", "CLIENTE", "STATUS", "DATA");
         exibirLinhaSeparadora(70); 
 
         System.out.printf("%-8d | %-30s | %-15s | %-20s%n",p.getCodigo(),p.getCliente().getNome(),p.getStatus().name(),p.getDataCriado().format(DATE_FORMATTER));
-
+        
 
         System.out.println("   --- Itens ---");
-        System.out.printf("   %-40s | %6s | %10s | %10s%n",
-                "DESCRIÇÃO", "QTD", "PREÇO UN.", "SUBTOTAL");
+        System.out.printf("   %-40s | %6s | %10s | %10s%n", "DESCRIÇÃO", "QTD", "PREÇO UN.", "SUBTOTAL");
         exibirLinhaSeparadora(70); 
 
         for (ItemPedido item : p.getItens()) {
@@ -77,8 +75,7 @@ public class ConsoleOutput {
 
 
     public void exibirRemessa(Remessa r) {
-        System.out.printf("%-6s | %-30s | %-20s | %-6s%n",
-                "CÓDIGO", "TRANSPORTADORA", "DATA", "PEDIDOS");
+        System.out.printf("%-6s | %-30s | %-20s | %-6s%n","CÓDIGO", "TRANSPORTADORA", "DATA", "PEDIDOS");
         exibirLinhaSeparadora(70);
 
         System.out.printf("%-6d | %-30s | %-20s | %-6d%n", r.getCodigo(),r.getTransportadora().getNome(),r.getData().format(DATE_FORMATTER),r.getPedidos().size());
@@ -89,8 +86,11 @@ public class ConsoleOutput {
             exibirSemRegistros("produtos");
             return;
         }
+        System.out.printf("%-6s | %-40s | %-10s | %-6s | %-30s%n","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE", "FORNECEDOR");
+
+        exibirLinhaSeparadora(90);
         for (Produto p : produtos) {
-            exibirProduto(p);
+            System.out.printf("%-6d | %-40s | %-10s | %-6d",p.getCodigo(),p.getDescricao(),String.format("R$ %.2f", p.getPreco()),p.getEstoque());
             System.out.println();
         }
     }
@@ -100,10 +100,13 @@ public class ConsoleOutput {
             exibirSemRegistros("fornecedores");
             return;
         }
+        System.out.printf("%-6s | %-30s | %-20s%n", "CÓDIGO", "NOME", "CNPJ");
+        exibirLinhaSeparadora(60);
+
         for (Fornecedor f : fornecedores) {
-            exibirFornecedor(f);
-            System.out.println();
+            System.out.printf("%-6d | %-30s | %-20s%n",f.getCodigo(),f.getNome(),f.getDocumento());            
         }
+        System.out.println();
     }
 
     public void exibirListaTransportadoras(List<Transportadora> transportadoras) {
@@ -111,10 +114,14 @@ public class ConsoleOutput {
             exibirSemRegistros("transportadoras");
             return;
         }
+        System.out.printf("%-6s | %-30s | %-10s%n", "CÓDIGO", "NOME", "TAXA FRETE");
+        exibirLinhaSeparadora(50);
+
+        
         for (Transportadora t : transportadoras) {
-            exibirTransportadora(t);
-            System.out.println();
+            System.out.printf("%-6d | %-30s | %-10s%n",t.getCodigo(),t.getNome(),String.format("R$ %.2f", t.getTaxaFrete()));
         }
+        System.out.println();
     }
 
     public void exibirListaUsuarios(List<Usuario> usuarios) {
@@ -122,10 +129,15 @@ public class ConsoleOutput {
             exibirSemRegistros("usuários");
             return;
         }
+
+        System.out.printf("%-6s | %-30s | %-15s | %-15s | %-10s%n",
+                "CÓDIGO", "NOME", "LOGIN", "DOCUMENTO", "NÍVEL");
+        exibirLinhaSeparadora(80);
+
         for (Usuario u : usuarios) {
-            exibirUsuario(u);
-            System.out.println();
+            System.out.printf("%-6d | %-30s | %-15s | %-15s | %-10s%n",u.getCodigo(),u.getNome(),u.getLogin(),u.getDocumento(),u.getNivelAcesso().name());
         }
+        System.out.println();
     }
 
     public void exibirListaPedidos(List<Pedido> pedidos) {
@@ -133,10 +145,24 @@ public class ConsoleOutput {
             exibirSemRegistros("pedidos");
             return;
         }
+        
+        
+        
         for (Pedido p : pedidos) {
-            exibirPedido(p);
-            System.out.println();
+            System.out.printf("%-8s | %-30s | %-15s | %-20s%n","NÚMERO", "CLIENTE", "STATUS", "DATA");
+            exibirLinhaSeparadora(70); 
+            System.out.printf("%-8d | %-30s | %-15s | %-20s%n",p.getCodigo(),p.getCliente().getNome(),p.getStatus().name(),p.getDataCriado().format(DATE_FORMATTER));
+            
+            System.out.printf("%-40s | %6s | %10s | %10s%n",    "DESCRIÇÃO", "QTD", "PREÇO UN.", "SUBTOTAL");
+            
+            for (ItemPedido item : p.getItens()) {
+                exibirItemPedido(item);
+            }
+            exibirLinhaSeparadora(70); 
+            System.out.printf("Total do pedido: R$ %.2f%n", p.calcularTotalPedido());
+
         }
+        System.out.println();
     }
 
     public void exibirListaRemessas(List<Remessa> remessas) {
@@ -144,9 +170,12 @@ public class ConsoleOutput {
             exibirSemRegistros("remessas");
             return;
         }
+        System.out.printf("%-6s | %-30s | %-20s | %-6s%n", "CÓDIGO", "TRANSPORTADORA", "DATA", "PEDIDOS");
+        exibirLinhaSeparadora(70);
+
         for (Remessa r : remessas) {
-            exibirRemessa(r);
-            System.out.println();
+            System.out.printf("%-6d | %-30s | %-20s | %-6d%n", r.getCodigo(),r.getTransportadora().getNome(),r.getData().format(DATE_FORMATTER),r.getPedidos().size());
         }
+        System.out.println();
     }
 }
