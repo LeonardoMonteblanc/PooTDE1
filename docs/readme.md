@@ -9,9 +9,6 @@
 
 ASSOCIAR REMESSA + PEDIDOS: CORRIGIR
 
-Senha root: (wittgenstein + indepencia do haiti)
-TratadoLogicoFilosofico1804@
-=======
 ---
 
 ### Login de teste
