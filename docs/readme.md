@@ -6,16 +6,12 @@
 * `/src/modelo`: entidades do domínio, heranças e enums de status/acesso.
 * `/src/exceptions`: exceções customizadas
 
-<<<<<<< HEAD
-CONSULTAS OK
-CADASTROS OK
-FAZER PEDIDO E REMESSA COM PROBLEMAS
 
+ASSOCIAR REMESSA + PEDIDOS: CORRIGIR
 
 Senha root: (wittgenstein + indepencia do haiti)
 TratadoLogicoFilosofico1804@
 =======
->>>>>>> 761df1cd2b2d97fb452df9acb4c574bc9add2d9d
 ---
 
 ### Login de teste

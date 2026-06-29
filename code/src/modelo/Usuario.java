@@ -15,6 +15,14 @@ public class Usuario extends Pessoa {
         setNivelAcesso(nivelAcesso);
     }
 
+    
+    public Usuario(String nome, String cpf, String login, String senha, NivelAcesso nivelAcesso) {
+        super(null, nome, cpf);
+        setLogin(login);
+        setSenha(senha);
+        setNivelAcesso(nivelAcesso);
+    }
+
     public void fazerLogin(String senha, String login) throws SistemaException {
         if(!this.senha.equals(senha) || !this.login.equals(login)) {
             throw new SistemaException("Login ou senha incorreto, tente novamente");

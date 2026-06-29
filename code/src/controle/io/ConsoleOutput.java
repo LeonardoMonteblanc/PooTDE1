@@ -18,18 +18,14 @@ public class ConsoleOutput {
     }
 
     public void exibirProduto(Produto p) {
-        System.out.printf("%-6s | %-40s | %-10s | %-6s | %-30s","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE", "FORNECEDOR");
-
+        System.out.printf("%-6s | %-40s | %-10s | %-6s%n","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE");
         exibirLinhaSeparadora(90);
-        
-        System.out.printf("%-6d | %-40s | %-10s | %-6d n",p.getCodigo(),p.getDescricao(),String.format("R$ %.2f", p.getPreco()),p.getEstoque());
-
+        System.out.printf("%-6d | %-40s | %-10s | %-6d%n",p.getCodigo(),p.getDescricao(),String.format("R$ %.2f", p.getPreco()),p.getEstoque());
     }
 
     public void exibirFornecedor(Fornecedor f) {
         System.out.printf("%-6s | %-30s | %-20s%n", "CÓDIGO", "NOME", "CNPJ");
         exibirLinhaSeparadora(60);
-
         System.out.printf("%-6d | %-30s | %-20s%n",f.getCodigo(),f.getNome(),f.getDocumento());
     }
 
@@ -41,8 +37,7 @@ public class ConsoleOutput {
     }
 
     public void exibirUsuario(Usuario u) {
-        System.out.printf("%-6s | %-30s | %-15s | %-15s | %-10s%n",
-                "CÓDIGO", "NOME", "LOGIN", "DOCUMENTO", "NÍVEL");
+        System.out.printf("%-6s | %-30s | %-15s | %-15s | %-10s%n","CÓDIGO", "NOME", "LOGIN", "DOCUMENTO", "NÍVEL");
         exibirLinhaSeparadora(80);
 
         System.out.printf("%-6d | %-30s | %-15s | %-15s | %-10s%n",u.getCodigo(),u.getNome(),u.getLogin(),u.getDocumento(),u.getNivelAcesso().name());
@@ -57,7 +52,6 @@ public class ConsoleOutput {
     public void exibirPedido(Pedido p) {
         System.out.printf("%-8s | %-30s | %-15s | %-20s%n","NÚMERO", "CLIENTE", "STATUS", "DATA");
         exibirLinhaSeparadora(70); 
-
         System.out.printf("%-8d | %-30s | %-15s | %-20s%n",p.getCodigo(),p.getCliente().getNome(),p.getStatus().name(),p.getDataCriado().format(DATE_FORMATTER));
         
 
@@ -86,7 +80,7 @@ public class ConsoleOutput {
             exibirSemRegistros("produtos");
             return;
         }
-        System.out.printf("%-6s | %-40s | %-10s | %-6s | %-30s%n","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE", "FORNECEDOR");
+        System.out.printf("%-6s | %-40s | %-10s | %-6s%n","CÓDIGO", "DESCRIÇÃO", "PREÇO", "ESTOQUE");
 
         exibirLinhaSeparadora(90);
         for (Produto p : produtos) {
@@ -150,16 +144,18 @@ public class ConsoleOutput {
         
         for (Pedido p : pedidos) {
             System.out.printf("%-8s | %-30s | %-15s | %-20s%n","NÚMERO", "CLIENTE", "STATUS", "DATA");
-            exibirLinhaSeparadora(70); 
+            exibirLinhaSeparadora(90); 
             System.out.printf("%-8d | %-30s | %-15s | %-20s%n",p.getCodigo(),p.getCliente().getNome(),p.getStatus().name(),p.getDataCriado().format(DATE_FORMATTER));
+            System.out.println();
             
             System.out.printf("%-40s | %6s | %10s | %10s%n",    "DESCRIÇÃO", "QTD", "PREÇO UN.", "SUBTOTAL");
-            
+            exibirLinhaSeparadora(90);
+
             for (ItemPedido item : p.getItens()) {
                 exibirItemPedido(item);
             }
-            exibirLinhaSeparadora(70); 
             System.out.printf("Total do pedido: R$ %.2f%n", p.calcularTotalPedido());
+            System.out.println();
 
         }
         System.out.println();

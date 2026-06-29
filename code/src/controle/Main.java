@@ -46,9 +46,11 @@ public class Main {
                     System.out.println("Usuário não encontrado.");
                     continue;
                 }
+
                 usuario.fazerLogin(senha, login);
                 usuarioLogado = usuario;
                 System.out.println("Login realizado com sucesso. Bem-vindo, " + usuario.getNome() + "!");
+                
             } catch (SistemaException e) {
                 System.out.println(e.getMessage());
             } catch (SQLException e) {

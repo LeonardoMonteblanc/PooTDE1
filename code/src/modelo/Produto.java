@@ -18,6 +18,12 @@ public class Produto {
         this.fornecedores = new ArrayList<>();
     }
 
+        public Produto(String desc, double preco, int qtdEstoque) {
+        setDescricao(desc);
+        setPreco(preco);
+        setEstoque(qtdEstoque);
+        this.fornecedores = new ArrayList<>();
+    }
 
 // FORNECEDOR ======================================================
     public void adicionarFornecedor(Fornecedor f) {

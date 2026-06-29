@@ -10,6 +10,11 @@ public class Fornecedor extends Pessoa {
         this.listaProdutos = new ArrayList<>();
     }
 
+    public Fornecedor(String nome, String cnpj) {
+        super(null, nome, cnpj);
+        this.listaProdutos = new ArrayList<>();
+    }
+
 // GETS ======================================================
     public List<Produto> getProdutos() {
         return new ArrayList<>(this.listaProdutos);

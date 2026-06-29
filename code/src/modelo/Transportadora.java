@@ -8,6 +8,12 @@ public class Transportadora extends Pessoa {
         this.taxaFrete = taxa;
     }
 
+    public Transportadora(String nome, String cnpj, double taxa) {
+        super(null, nome, cnpj);
+        this.taxaFrete = taxa;
+    }
+
+
 // GETS ======================================================
     public double getTaxaFrete() {
         return this.taxaFrete;

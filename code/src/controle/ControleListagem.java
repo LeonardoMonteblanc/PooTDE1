@@ -38,6 +38,7 @@ public class ControleListagem {
         try {
             List<Produto> produtos = produtoDAO.listarTodos();
             out.exibirListaProdutos(produtos);
+
         } catch (SQLException e) {
             System.err.println("Erro ao listar produtos: " + e.getMessage());
         }
@@ -47,6 +48,7 @@ public class ControleListagem {
         try {
             List<Fornecedor> fornecedores = fornecedorDAO.listarTodos();
             out.exibirListaFornecedores(fornecedores);
+
         } catch (SQLException e) {
             System.err.println("Erro ao listar fornecedores: " + e.getMessage());
         }
@@ -56,6 +58,7 @@ public class ControleListagem {
         try {
             List<Transportadora> transportadoras = transportadoraDAO.listarTodos();
             out.exibirListaTransportadoras(transportadoras);
+
         } catch (SQLException e) {
             System.err.println("Erro ao listar transportadoras: " + e.getMessage());
         }
@@ -69,6 +72,7 @@ public class ControleListagem {
         try {
             List<Usuario> usuarios = usuarioDAO.listarTodos();
             out.exibirListaUsuarios(usuarios);
+
         } catch (SQLException e) {
             System.err.println("Erro ao listar usuários: " + e.getMessage());
         }
@@ -79,9 +83,11 @@ public class ControleListagem {
             List<Pedido> pedidos;
             if (isAdmin(usuarioLogado)) {
                 pedidos = pedidoDAO.listarTodos();
+
             } else {
                 pedidos = pedidoDAO.listarPorCliente(usuarioLogado.getCodigo());
             }
+
             out.exibirListaPedidos(pedidos);
         } catch (SQLException e) {
             System.err.println("Erro ao listar pedidos: " + e.getMessage());
@@ -93,9 +99,11 @@ public class ControleListagem {
             List<Remessa> remessas;
             if (isAdmin(usuarioLogado)) {
                 remessas = remessaDAO.listarTodos();
+
             } else {
                 remessas = remessaDAO.listarPorCliente(usuarioLogado.getCodigo());
             }
+
             out.exibirListaRemessas(remessas);
         } catch (SQLException e) {
             System.err.println("Erro ao listar remessas: " + e.getMessage());
@@ -106,10 +114,12 @@ public class ControleListagem {
     public void consultarProdutoPorCodigo(int codigo) {
         try {
             Produto p = produtoDAO.buscarPorCodigo(codigo);
+
             if (p == null) {
                 System.out.println("Produto com código " + codigo + " não encontrado.");
                 return;
             }
+
             out.exibirProduto(p);
         } catch (SQLException e) {
             System.err.println("Erro ao consultar produto: " + e.getMessage());
@@ -124,6 +134,7 @@ public class ControleListagem {
                 return;
             }
             out.exibirFornecedor(f);
+
         } catch (SQLException e) {
             System.err.println("Erro ao consultar fornecedor: " + e.getMessage());
         }
@@ -137,6 +148,7 @@ public class ControleListagem {
                 return;
             }
             out.exibirTransportadora(t);
+
         } catch (SQLException e) {
             System.err.println("Erro ao consultar transportadora: " + e.getMessage());
         }
@@ -147,6 +159,7 @@ public class ControleListagem {
             System.out.println("Acesso negado. Apenas administradores podem consultar outros usuários.");
             return;
         }
+
         try {
             Usuario u = usuarioDAO.buscarPorCodigo(codigo);
             if (u == null) {
@@ -156,6 +169,24 @@ public class ControleListagem {
             out.exibirUsuario(u);
         } catch (SQLException e) {
             System.err.println("Erro ao consultar usuário: " + e.getMessage());
+        }
+    }
+
+    public void consultarRemessaPorCodigo(int codigo, Usuario usuarioLogado) {
+        if (!isAdmin(usuarioLogado) && usuarioLogado.getCodigo() != codigo) {
+            System.out.println("Acesso negado. Apenas administradores podem consultar outros usuários.");
+            return;
+        }
+
+        try {
+            Remessa r = remessaDAO.buscarPorCodigo(codigo);
+            if (r == null) {
+                System.out.println("Remessa com código " + codigo + " não encontrado.");
+                return;
+            }
+            out.exibirRemessa(r);
+        } catch (SQLException e) {
+            System.err.println("Erro ao consultar remessa: " + e.getMessage());
         }
     }
 
@@ -251,7 +282,6 @@ public class ControleListagem {
             System.err.println("Erro ao buscar pedidos por período: " + e.getMessage());
         }
     }
-
 
     private boolean isAdmin(Usuario usuario) {
         return usuario != null && usuario.getNivelAcesso() == NivelAcesso.ADMIN;

@@ -10,7 +10,7 @@ public class ItemPedido {
     public ItemPedido(Produto produto, int quantidade) {
         this.setProduto(produto);
         this.setQuantidade(quantidade);
-        this.validarQuantidade();
+        // this.validarQuantidade();
     }
 
     public void validarQuantidade() throws EstoqueException {

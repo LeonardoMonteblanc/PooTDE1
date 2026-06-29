@@ -47,22 +47,16 @@ public class ControleCadastro {
         }
 
         try {
-            int codigo = leitor.inteiro("Código do produto: ");
-
-            if (produtoDAO.buscarPorCodigo(codigo) != null) {
-                System.out.println("Já existe produto com este código.");
-                return;
-            }
-
             String descricao = leitor.linha("Descrição: ");
             double preco = leitor.real("Preço: ");
             int estoque = leitor.inteiro("Estoque inicial: ");
 
-            Produto produto = new Produto(codigo, descricao, preco, estoque);
+            Produto produto = new Produto(descricao, preco, estoque);
 
             String associar = leitor.linha("Deseja associar a um fornecedor? (S/N): ");
 
             if (associar.equalsIgnoreCase("S")) {
+                listarFornecedores();
                 int idFornecedor = leitor.inteiro("Código do fornecedor: ");
 
                 Fornecedor fornecedor = fornecedorDAO.buscarPorCodigo(idFornecedor);
@@ -139,17 +133,11 @@ public class ControleCadastro {
             return;
         }
         try {
-            int codigo = leitor.inteiro("Código do fornecedor: ");
-
-            if (fornecedorDAO.buscarPorCodigo(codigo) != null) {
-                System.out.println("Código já existe.");
-                return;
-            }
-
             String nome = leitor.linha("Nome: ");
             String cnpj = leitor.linha("CNPJ: ");
-            Fornecedor f = new Fornecedor(codigo, nome, cnpj);
+            Fornecedor f = new Fornecedor(nome, cnpj);
             fornecedorDAO.salvar(f);
+
             System.out.println("Fornecedor cadastrado.");
 
         } catch (SQLException e) {
@@ -197,17 +185,10 @@ public class ControleCadastro {
             return;
         }
         try {
-            int codigo = leitor.inteiro("Código da transportadora: ");
-
-            if (transportadoraDAO.buscarPorCodigo(codigo) != null) {
-                System.out.println("Código já existe.");
-                return;
-            }
-
             String nome = leitor.linha("Nome: ");
             String cnpj = leitor.linha("CNPJ: ");
             double taxa = leitor.real("Taxa de frete: ");
-            Transportadora t = new Transportadora(codigo, nome, cnpj, taxa);
+            Transportadora t = new Transportadora(nome, cnpj, taxa);
             transportadoraDAO.salvar(t);
 
             System.out.println("Transportadora cadastrada.");
@@ -260,15 +241,8 @@ public class ControleCadastro {
         }
 
         try {
-            int codigo = leitor.inteiro("Código do usuário: ");
-
-            if (usuarioDAO.buscarPorCodigo(codigo) != null) {
-                System.out.println("Código já existe.");
-                return;
-            }
 
             String nome = leitor.linha("Nome: ");
-            String documento = leitor.linha("CPF: ");
             String login = leitor.linha("Login: ");
 
             if (usuarioDAO.buscarPorLogin(login) != null) {
@@ -279,7 +253,7 @@ public class ControleCadastro {
             String senha = leitor.linha("Senha: ");
             String nivelStr = leitor.linha("Nível (ADMIN/CLIENTE): ");
             NivelAcesso nivel = NivelAcesso.valueOf(nivelStr.toUpperCase());
-            Usuario u = new Usuario(codigo, nome, documento, login, senha, nivel);
+            Usuario u = new Usuario(nome, "", login, senha, nivel);
 
             usuarioDAO.salvar(u);
             System.out.println("Usuário cadastrado.");
@@ -439,6 +413,7 @@ public class ControleCadastro {
             remessa.adicionarPedido(pedido);
 
             pedidoDAO.salvar(pedido);
+
             for (ItemPedido item : pedido.getItens()) {
                 itemPedidoDAO.salvar(item, pedido.getCodigo());
             }
@@ -446,9 +421,8 @@ public class ControleCadastro {
             for (ItemPedido item : pedido.getItens()) {
                 produtoDAO.atualizar(item.getProduto());
             }
+            
             remessaDAO.salvar(remessa);
-            pedidoDAO.atualizarRemessaEFrete(pedido.getCodigo(), remessa.getCodigo(), pedido.getValorFrete());
-
 
             System.out.println("Pedido #" + pedido.getCodigo() + " finalizado com sucesso!");
             out.exibirPedido(pedido);
@@ -559,12 +533,14 @@ public class ControleCadastro {
         try {
             int codRemessa = leitor.inteiro("Código da remessa a alterar: ");
             Remessa remessa = remessaDAO.buscarPorCodigo(codRemessa);
+
             if (remessa == null) {
                 System.out.println("Remessa não encontrada.");
                 return;
             }
-            out.exibirRemessa(remessa); 
+            out.exibirRemessa(remessa);
             listarTransportadoras();
+
             int codTransp = leitor.inteiro("Nova transportadora: ");
             Transportadora nova = transportadoraDAO.buscarPorCodigo(codTransp);
             if (nova == null) {
@@ -599,6 +575,15 @@ public class ControleCadastro {
             out.exibirListaTransportadoras(lista);
         } catch (SQLException e) {
             System.err.println("Erro ao listar transportadoras.");
+        }
+    }
+
+    private void listarFornecedores() {
+        try {
+            List<Fornecedor> lista = fornecedorDAO.listarTodos();
+            out.exibirListaFornecedores(lista);
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar fornecedores");
         }
     }
 }

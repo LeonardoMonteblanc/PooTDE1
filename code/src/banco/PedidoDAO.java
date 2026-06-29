@@ -15,32 +15,17 @@ public class PedidoDAO {
 
     public void salvar(Pedido pedido) throws SQLException {
         String sql = "INSERT INTO pedido (usuario_id, status_pedido) VALUES (?, ?)";
-        Connection con = null;
-        try {
-            con = ConexaoBD.getConnection();
-            con.setAutoCommit(false);
-            try (PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setInt(1, pedido.getCliente().getCodigo());
+        try (Connection con = ConexaoBD.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {                stmt.setInt(1, pedido.getCliente().getCodigo());
+        
                 stmt.setString(2, pedido.getStatus().name());
-                stmt.executeUpdate();
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) pedido.setCodigo(rs.getInt(1));
-                }
-            }
-            if (pedido.getItens() != null && !pedido.getItens().isEmpty()) {
-                itemPedidoDAO.salvarLista(pedido.getItens(), pedido.getCodigo());
-            }
-            con.commit();
-        } catch (SQLException e) {
-            if (con != null) con.rollback();
-            throw e;
-        } finally {
-            if (con != null) {
-                con.setAutoCommit(true);
-                con.close();
+            stmt.executeUpdate();
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) pedido.setCodigo(rs.getInt(1));
             }
         }
     }
+
 
     public void atualizar(Pedido pedido) throws SQLException {
         String sql = "UPDATE pedido SET usuario_id = ?, status_pedido = ?, " +
