@@ -38,6 +38,13 @@ public class RemessaDAO {
             query.executeUpdate();
         }
     }
+    private void carregarPedidos(Remessa remessa) throws SQLException {
+    PedidoDAO pedidoDAO = new PedidoDAO();
+    List<Pedido> pedidos = pedidoDAO.listarPorRemessa(remessa.getCodigo());
+    for (Pedido p : pedidos) {
+        remessa.adicionarPedidoExistente(p); 
+    }
+}
 
     public Remessa buscarPorCodigo(int codigo) throws SQLException {
         String sql = "SELECT r.id AS r_id, r.transportadora_id, r.data_criacao, " +
@@ -48,7 +55,13 @@ public class RemessaDAO {
              PreparedStatement query = con.prepareStatement(sql)) {
             query.setInt(1, codigo);
             try (ResultSet rs = query.executeQuery()) {
-                return rs.next() ? mapear(rs) : null;
+                if(rs.next()) {
+                Remessa remessa = mapear(rs);
+                carregarPedidos(remessa);
+                return remessa;
+                }
+                return null;
+
             }
         }
     }
@@ -61,9 +74,13 @@ public class RemessaDAO {
         try (Connection con = ConexaoBD.getConnection();
              PreparedStatement query = con.prepareStatement(sql);
              ResultSet rs = query.executeQuery()) {
-            while (rs.next()) lista.add(mapear(rs));
+            while (rs.next()) {
+                Remessa remessa = mapear(rs);
+                carregarPedidos(remessa);
+                lista.add(remessa);
+            }
+            return lista;
         }
-        return lista;
     }
 
     public List<Remessa> listarPorCliente(int usuarioCodigo) throws SQLException {
@@ -78,10 +95,14 @@ public class RemessaDAO {
              PreparedStatement query = con.prepareStatement(sql)) {
             query.setInt(1, usuarioCodigo);
             try (ResultSet rs = query.executeQuery()) {
-                while (rs.next()) lista.add(mapear(rs));
+                while (rs.next()) {
+                Remessa remessa = mapear(rs);
+                carregarPedidos(remessa);
+                lista.add(remessa);
+            }
+            return lista;
             }
         }
-        return lista;
     }
 
     private Remessa mapear(ResultSet rs) throws SQLException {

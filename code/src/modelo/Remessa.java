@@ -28,6 +28,14 @@ public class Remessa {
         }
     }
 
+    
+    public void adicionarPedidoExistente(Pedido p) {
+        if (p != null && !this.pedidos.contains(p)) {
+            this.pedidos.add(p);
+        }
+    }
+
+
     private void somarFrete(Pedido p) {
         p.setFrete(transportadora.getTaxaFrete());
     }

@@ -122,6 +122,11 @@ public class PedidoDAO {
         }
     }
 
+    public List<Pedido> listarPorRemessa(int remessaCodigo) throws SQLException {
+        String sql = "SELECT * FROM pedido WHERE remessa_id = ?";
+    return listarComSql(sql, stmt -> stmt.setInt(1, remessaCodigo));
+}
+
     public void atualizarRemessaEFrete(int pedidoCodigo, Integer remessaCodigo, double frete) throws SQLException {
         // OBS: a tabela "pedido" não possui coluna "frete" no schema atual.
         // Apenas remessa_id é persistido.
@@ -135,6 +140,7 @@ public class PedidoDAO {
             }
             stmt.setInt(2, pedidoCodigo);
             stmt.executeUpdate();
+
         }
     }
 

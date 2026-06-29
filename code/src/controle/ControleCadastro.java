@@ -505,7 +505,7 @@ public class ControleCadastro {
                 Pedido ped = pedidoDAO.buscarPorCodigo(codPed);
                 if (ped != null && ped.getStatus() == StatusPedido.EM_PROCESSAMENTO) {
                     remessa.adicionarPedido(ped);
-                }
+                } 
             }
             if (remessa.getPedidos().isEmpty()) {
                 System.out.println("Nenhum pedido válido selecionado.");
@@ -514,6 +514,7 @@ public class ControleCadastro {
 
             remessaDAO.salvar(remessa);
 
+            
             for (Pedido p : remessa.getPedidos()) {
                 pedidoDAO.atualizarRemessaEFrete(p.getCodigo(), remessa.getCodigo(), p.getValorFrete());
             }
